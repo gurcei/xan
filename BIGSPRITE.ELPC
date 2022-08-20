@@ -1,0 +1,57 @@
+#output "bigsprite"
+
+#declare a$ = ""
+#declare idx = 0
+
+#declare SPRX64EN = $d057
+#declare SPRHGTEN = $d055
+#declare SPRHGT   = $d056
+
+#declare SPRPTR16 = $d06e
+#declare SPRPTRADR = $d06c
+#declare SPRPTRBNK = $d06e
+
+' let all sprites be 64 bits wide
+poke SPRX64EN, 255
+
+' let all sprites be 64 bits high
+poke SPRHGTEN, 255
+poke SPRHGT, 64
+
+' enforce sprites into BANK4 and SPRPTR16 bit turned on
+poke SPRPTRBNK, 4+128           
+' wpoke SPRPTRADR, 0
+{x5E}{x5E}wpoke $d06c, 0
+
+' load 64x64 sprite data
+{x5E}{x5E}bload "muse.dat",p($40040),r
+      
+' display sprite
+sprite 0,1,0
+movspr 0,100,100
+sprite 1,1,0
+movspr 1,200,100
+
+' point sprite0 to $4040
+bank 4
+{x5E}{x5E}wpoke 0, $1001
+{x5E}{x5E}wpoke 2, $1001+8*6
+
+' set background, border
+background 6
+border 14
+
+
+.loop
+
+' select sprite frame
+bank 4
+poke 0, 1+8*idx
+poke 2, 1+8*(idx+6)
+sleep .3
+idx=idx+1
+if idx=6 then idx=0
+get a$:if a$="" then goto loop
+
+sprite 0,0
+ÿ
