@@ -18,8 +18,8 @@ muse.dat: $(BINS)
 		cat $$bin >> muse.dat ; \
 	done
 
-
-# --------------------------------------------------
+pushdat: muse.dat
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat
 
 bigsprite.prg:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
