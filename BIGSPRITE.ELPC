@@ -28,17 +28,24 @@ poke SPRPTRBNK, 4+128
       
 ' display sprite
 sprite 0,1,0
-movspr 0,50,100
+movspr 0,0+18,60
 sprite 1,1,0
-movspr 1,150,100
+movspr 1,85+18,60
 sprite 2,1,0
-movspr 2,250,100
+movspr 2,171+18,60
+sprite 3,1,0
+movspr 3,256+18,60
+
+sprite 4,1,0
+movspr 4,0+18+8,160
 
 ' point sprite0 to $4040
 bank 4
 {x5E}{x5E}wpoke 0, $1001
 {x5E}{x5E}wpoke 2, $1001+8*6
 {x5E}{x5E}wpoke 4, $1001+8*12
+{x5E}{x5E}wpoke 6, $1001+8*18
+{x5E}{x5E}wpoke 8, $1001+8*24
 
 ' set background, border
 background 6
@@ -52,6 +59,8 @@ bank 4
 poke 0, 1+8*idx
 poke 2, 1+8*(idx+6)
 poke 4, 1+8*(idx+12)
+poke 6, 1+8*(idx+18)
+poke 8, 1+8*(idx+24)
 sleep .3
 idx=idx+1
 if idx=6 then idx=0
