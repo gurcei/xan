@@ -25,6 +25,8 @@ bigsprite.prg:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
 
 bigsprite.d81: muse.dat bigsprite.prg
+	rm -f bigsprite.prg
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
 	rm -f bigsprite.d81
 	c1541 -format bigsprite,gi d81 bigsprite.d81
 	c1541 -attach bigsprite.d81 -write bigsprite.prg bigsprite
