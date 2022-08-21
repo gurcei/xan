@@ -2,6 +2,7 @@
 
 #declare a$ = ""
 #declare idx = 0
+#declare value = 0
 
 #declare SPRX64EN = $d057
 #declare SPRHGTEN = $d055
@@ -38,6 +39,8 @@ movspr 3,256+18,60
 
 sprite 4,1,0
 movspr 4,0+18+8,160
+sprite 5,1,0
+movspr 5,85+18+8,160
 
 ' point sprite0 to $4040
 bank 4
@@ -46,6 +49,7 @@ bank 4
 {x5E}{x5E}wpoke 4, $1001+8*12
 {x5E}{x5E}wpoke 6, $1001+8*18
 {x5E}{x5E}wpoke 8, $1001+8*24
+{x5E}{x5E}wpoke 10, $1001+8*30
 
 ' set background, border
 background 6
@@ -61,6 +65,10 @@ poke 2, 1+8*(idx+6)
 poke 4, 1+8*(idx+12)
 poke 6, 1+8*(idx+18)
 poke 8, 1+8*(idx+24)
+value = $1001+8*(idx+30)
+poke 10, value and 255
+poke 11, (value / 256)
+
 sleep .3
 idx=idx+1
 if idx=6 then idx=0
