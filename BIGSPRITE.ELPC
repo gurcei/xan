@@ -54,8 +54,8 @@ bank 4
 {x5E}{x5E}wpoke 6, $1001+8*18
 {x5E}{x5E}wpoke 8, $1001+8*24
 {x5E}{x5E}wpoke 10, $1001+8*30
-{x5E}{x5E}wpoke 12, $1001+8*36
-{x5E}{x5E}wpoke 14, $1001+8*42
+{x5E}{x5E}wpoke 12, $1001+8*42
+{x5E}{x5E}wpoke 14, $1001+8*48
 
 ' set background, border
 background 6
@@ -74,10 +74,10 @@ poke 8, 1+8*(idx+24)
 value = $1001+8*(idx+30)
 poke 10, value and 255
 poke 11, (value / 256)
-value = $1001+8*(idx+36)
+value = $1001+8*(idx+42)
 poke 12, value and 255
 poke 13, (value / 256)
-value = $1001+8*(idx+42)
+value = $1001+8*(idx+48)
 poke 14, value and 255
 poke 15, (value / 256)
 sleep .3
