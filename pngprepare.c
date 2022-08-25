@@ -261,6 +261,10 @@ void process_file(int mode, char *outputfilename)
   if (png_get_color_type(png_ptr, info_ptr) == PNG_COLOR_TYPE_RGBA)
     multiplier=4;
 
+  printf("bit-depth = %d\n", png_get_bit_depth(png_ptr, info_ptr));
+  if (png_get_bit_depth(png_ptr, info_ptr) == 8 && mode == 5)
+    multiplier = 1;
+
   if (multiplier==-1) {
     fprintf(stderr,"Could not convert file to RGB or RGBA\n");
   }
@@ -596,7 +600,19 @@ void process_file(int mode, char *outputfilename)
     }
     */
   } // if mode == gihires
-
+    //
+  /* ============================ */
+  if (mode==5) { // mode == 80x50_32
+    printf("multiplier=%d\n", multiplier);
+    for (y=0; y<height; y++) {
+      png_byte* row = row_pointers[y];
+      for (x=0; x<width; x++) {
+        int byteval = row[x*multiplier];
+        fputc(byteval, outfile);
+        printf("%d\n");
+      }
+    }
+  }
 }
 ;
  
@@ -607,7 +623,7 @@ int mode=-1;
 int main(int argc, char **argv)
 {
   if (argc < 4) {
-    fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires> <file_in> <file_out> <options\n");
+    fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires> <file_in> <file_out> <options>\n");
     exit(-1);
   }
 
@@ -617,6 +633,7 @@ int main(int argc, char **argv)
   if (!strcasecmp("hires",argv[1])) mode=2;
   if (!strcasecmp("4sprmulti",argv[1])) mode=3;
   if (!strcasecmp("gihires",argv[1])) mode=4;
+  if (!strcasecmp("80x50_32",argv[1])) mode=5;
   if (mode==-1) {
     fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires> <file_in> <file_out> <options>\n");
     exit(-1);
@@ -642,52 +659,6 @@ int main(int argc, char **argv)
   //sprintf(out2name, "%s.mirror");
   //FILE* outfile2=fopen(out2name,"w");
   process_file(mode,argv[3]);
-
-  // for gihires2, process the same file, but mirrored
-  if (mode == 5)
-  {
-    char* orig_outfname = argv[3];
-    char fname[256];
-    char revpngname[256];
-
-    for (int k = 0; k < strlen(orig_outfname); k++)
-      if (orig_outfname[k] == '.') orig_outfname[k] = '\0';
-
-    sprintf(fname, "%s_rev.bin", orig_outfname);
-    sprintf(revpngname, "%s_rev.png", orig_outfname);
-
-    // reverse/mirror the pixels in the png rows
-    png_byte* tmp_row = (png_byte*) malloc(width*multiplier);
-    for (y=0; y<height; y++)
-    {
-      png_byte* row = row_pointers[y];
-      for (x=0; x<width; x++)
-      {
-        png_byte* ptr1 = &(row[x*multiplier]);
-        png_byte* ptr2 = &(tmp_row[(width-x-1)*multiplier]);
-
-        ptr2[0] = ptr1[0];
-        ptr2[1] = ptr1[1];
-        ptr2[2] = ptr1[2];
-        if (multiplier == 4)
-          ptr2[3] = ptr1[3];
-      }
-      for (x=0; x<width; x++)
-      {
-        png_byte* ptr1 = &(row[x*multiplier]);
-        png_byte* ptr2 = &(tmp_row[x*multiplier]);
-
-        ptr1[0] = ptr2[0];
-        ptr1[1] = ptr2[1];
-        ptr1[2] = ptr2[2];
-        if (multiplier == 4)
-          ptr1[3] = ptr2[3];
-      }
-    }
-    //writeImage(revpngname, width, height, row_pointers, "blah");
-
-    process_file(mode, fname);
-  }
 
   printf("done\n");
 
