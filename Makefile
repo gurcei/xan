@@ -6,17 +6,21 @@ all: bigsprite.d81
 pngprepare: pngprepare.c
 	$(CC) -I/usr/local/include -L/usr/local/lib -g -O0 -o pngprepare pngprepare.c -lpng
 
+addpalette: addpalette.c
+	$(CC) -I/usr/local/include -L/usr/local/lib -g -O0 -o addpalette addpalette.c
+
 PNGS = $(shell ls *.png)
 
 BINS = $(patsubst %.png,%.bin,$(PNGS))
 
-muse.dat: $(BINS)
+muse.dat: $(BINS) addpalette
 	rm -f bigsprite.prg
 	rm -f muse.dat
 	touch muse.dat
 	for bin in $(BINS) ; do \
 		cat $$bin >> muse.dat ; \
 	done
+	./addpalette
 
 pushdat: muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat
