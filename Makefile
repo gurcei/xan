@@ -3,6 +3,9 @@ all: bigsprite.d81
 %.bin: %.png pngprepare
 	./pngprepare gihires $< $@
 
+oli/%.bin: oli/%.png pngprepare
+	./pngprepare 80x50_32 $< $@
+
 pngprepare: pngprepare.c
 	$(CC) -I/usr/local/include -L/usr/local/lib -g -O0 -o pngprepare pngprepare.c -lpng
 
@@ -10,10 +13,12 @@ addpalette: addpalette.c
 	$(CC) -I/usr/local/include -L/usr/local/lib -g -O0 -o addpalette addpalette.c
 
 PNGS = $(shell ls *.png)
-
 BINS = $(patsubst %.png,%.bin,$(PNGS))
 
-muse.dat: $(BINS) addpalette
+OLIPNGS = $(shell ls oli/*.png)
+OLIBINS = $(putsubst %.png,%.bin,$(OLIPNGS))
+
+muse.dat: $(BINS) $(OLIBINS) addpalette
 	rm -f bigsprite.prg
 	rm -f muse.dat
 	touch muse.dat
@@ -21,6 +26,7 @@ muse.dat: $(BINS) addpalette
 		cat $$bin >> muse.dat ; \
 	done
 	./addpalette
+	cat oli/s00.bin >> muse.dat
 
 pushdat: muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat

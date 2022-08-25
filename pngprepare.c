@@ -33,6 +33,9 @@ png_infop info_ptr;
 int number_of_passes;
 png_bytep * row_pointers;
 
+png_colorp palette = NULL;
+int num_palette;
+
 FILE *infile;
 FILE *outfile;
 
@@ -262,14 +265,16 @@ void process_file(int mode, char *outputfilename)
     multiplier=4;
 
   printf("bit-depth = %d\n", png_get_bit_depth(png_ptr, info_ptr));
-  if (png_get_bit_depth(png_ptr, info_ptr) == 8 && mode == 5)
-    multiplier = 1;
+
+  png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
+
+  printf("number_palette=%d\n", num_palette);
 
   if (multiplier==-1) {
     fprintf(stderr,"Could not convert file to RGB or RGBA\n");
   }
 
-  outfile=fopen(outputfilename,"w");
+  outfile=fopen(outputfilename,"wb");
   if (outfile == NULL) {
     // could not open output file, so close all and exit
     if (infile != NULL) {
@@ -607,14 +612,26 @@ void process_file(int mode, char *outputfilename)
     for (y=0; y<height; y++) {
       png_byte* row = row_pointers[y];
       for (x=0; x<width; x++) {
-        int byteval = row[x*multiplier];
+        int red = row[x*multiplier];
+        int green = row[x*multiplier+1];
+        int blue = row[x*multiplier+2];
+        int byteval = 0;
+
+        for (int clr=0; clr < 32; clr++) {
+          if (palette[clr].red == red && palette[clr].green == green && palette[clr].blue == blue) {
+            byteval = clr;
+            if (clr >15)
+              byteval = (clr & 0x0f) + 64;
+            //printf("match!\n");
+            break;
+          }
+        }
+
         fputc(byteval, outfile);
-        printf("%d\n");
       }
     }
   }
 }
-;
  
 /* ============================================================= */
 
