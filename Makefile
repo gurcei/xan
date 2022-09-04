@@ -41,6 +41,10 @@ pushdat: muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete oli.dat -write oli.dat
 
+getbas:
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read grab grab.prg
+	petcat -65 -o grab.bas -- grab.prg
+
 bigsprite.prg:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
 
