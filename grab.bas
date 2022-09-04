@@ -1,4 +1,5 @@
     1 cl$=chr$(27)+"q"
+    2 ff=0
    10 rem *** screen capture ***
    20 rem 1. press 'space' key on top-left point
    30 rem 2. then use cursor keys to move to bottom-right point & press 'space'
@@ -15,6 +16,8 @@
   100 if a$="{rght}" and x<79 then x=x+1
   110 if a$="{up}" and y>0 then y=y-1
   120 if a$="{down}" and y<24 then y=y+1
+  122 if a$="-" and ff>0 then ff=ff-1:b=ff:gosub 620
+  124 if a$="=" and ff<peek($40000) then ff=ff+1:b=ff:gosub 620
   130 if a$=" " then s=s+1:gosub 1000:if s=2 then goto 150
   132 if a$="l" then gosub 600:rem load block
   133 if a$="x" then cursor 0,0:end
