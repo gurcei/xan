@@ -16,6 +16,7 @@
   100 if a$="{rght}" and x<79 then x=x+1
   110 if a$="{up}" and y>0 then y=y-1
   120 if a$="{down}" and y<24 then y=y+1
+  121 if a$="c" then print "{clr}";:b=0:gosub 620
   122 if a$="-" and ff>0 then ff=ff-1:b=ff:gosub 620
   124 if a$="=" and ff<peek($40000) then ff=ff+1:b=ff:gosub 620
   130 if a$=" " then s=s+1:gosub 1000:if s=2 then goto 150
