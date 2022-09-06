@@ -1,10 +1,10 @@
     1 cl$=chr$(27)+"q"
-    2 ff=0
+    2 ff=0:gosub 1200
    10 rem *** screen capture ***
    20 rem 1. press 'space' key on top-left point
    30 rem 2. then use cursor keys to move to bottom-right point & press 'space'
    40 rem 3. provide a filename to save to
-   50 x=0:y=0:s=0
+   50 x=0:y=0:s=0:sv=0
    51 if peek($5fffe)<>71 or peek($5ffff)<>73 then sprdef $5fffe,$4947:poke $40000,0:rem check for magic marker at end of bank 5, if not there, initialise b4 mem
    55  cursor 0,24:gosub 1100:print cl$;"block count=";peek($40000);", next-free=$";hex$(z);
    60 if s=0 then t1=peek($800+x+y*80):c1=peek($1f800+x+y*80):x0=x:y0=y
@@ -14,6 +14,10 @@
    85 if a$<>" " then gosub 1000
    90 if a$="{left}" and x>0 then x=x-1
   100 if a$="{rght}" and x<79 then x=x+1
+  101 if a$=";" and sv>0 then sv=sv-1:gosub 1300
+  102 if a$=":" and sv<8 then sv=sv+1:gosub 1300
+  103 if a$="]" and sg>0 then sg=sg-1:gosub 1400
+  104 if a$="[" and sg<8 then sg=sg+1:gosub 1400
   110 if a$="{up}" and y>0 then y=y-1
   120 if a$="{down}" and y<24 then y=y+1
   121 if a$="c" then print "{clr}";:b=0:gosub 620
@@ -94,3 +98,26 @@
  1150 h=peek(z):z=z+1
  1160 z=z+w*h*2
  1170 i=i+1:goto 1120
+ 1200 rem *** store 1st 32 default colours ***
+ 1210 dim dr(32),dg(32),db(32)
+ 1220 for k=0 to 31
+ 1230 dr(k)=peek($d100+k):dg(k)=peek($d200+k):db(k)=peek($d300+k)
+ 1240 next k
+ 1250 return
+ 1300 rem *** fade all colours by value sv (0-8) ***
+ 1305 sz = (8-sv)/8
+ 1310 for k=0 to 31
+ 1320 poke $d100+k, dr(k)*sz
+ 1330 poke $d200+k, dg(k)*sz
+ 1340 poke $d300+k, db(k)*sz
+ 1350 next k
+ 1360 return
+ 1400 rem *** fade all colours to greyscale sgclose(0-8) ***
+ 1410 sz = (8-sg)/8
+ 1420 for k=0 to 31
+ 1430 gr=(dr(k)+dg(k)+db(k))/3
+ 1440 poke $d100+k, int(gr+(dr(k)-gr)*sz)
+ 1450 poke $d200+k, int(gr+(dg(k)-gr)*sz)
+ 1460 poke $d300+k, int(gr+(db(k)-gr)*sz)
+ 1470 next k
+ 1480 return
