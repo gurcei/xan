@@ -1,26 +1,40 @@
 #output "bigsprite"
 
+
+'------------
+.declarations
+'------------
 #declare a$ = ""
 #declare idx = 0
 #declare value = 0
 #declare loc
+#declare k
 
 #declare SPRX64EN = $d057
 #declare SPRHGTEN = $d055
 #declare SPRHGT   = $d056
 
+#declare SCRNPTRLSB = $d060
+#declare SCRNPTRBNK = $d062
+
 #declare SPRPTR16 = $d06e
 #declare SPRPTRADR = $d06c
 #declare SPRPTRBNK = $d06e
 
+#declare HOTREG¯7 = $d05d
+
+
+'----
+.init
+'----
 ' switch to 80x50
 bank 128
-{x5E}{x5E}setbit $d05d, 7
-poke $d031, $e8
+setbit HOTREG¯7, 7
+poke $d031, $e8 ' 1110 1000 = H640,FAST,ATTR,V400
 
 ' move SCRNPTR to bank4 - $8000
-{x5E}{x5E}wpoke $d060,$8000
-poke $d062,$04
+wpoke SCRNPTRLSB, $8000
+poke SCRNPTRBNK,$04
 
 ' let all sprites be 64 bits wide
 poke SPRX64EN, 255
@@ -50,8 +64,7 @@ poke SPRHGT, 64
 
 ' enforce sprites into BANK4 and SPRPTR16 bit turned on
 poke SPRPTRBNK, 4+128           
-' wpoke SPRPTRADR, 0
-{x5E}{x5E}wpoke $d06c, 0
+wpoke SPRPTRADR, 0
 
 ' load 64x64 sprite data
 {x5E}{x5E}bload "muse.dat",p($40040),r
@@ -66,7 +79,7 @@ for idx=0 to 31
   red=peek(loc):loc=loc+1
   green=peek(loc):loc=loc+1
   blue=peek(loc):loc=loc+1
-print "r=";red;", g=";green;", b=";blue
+' print "r=";red;", g=";green;", b=";blue
   poke $d100+idx,red
   poke $d200+idx,green
   poke $d300+idx,blue
@@ -99,14 +112,9 @@ movspr 7,256+offx,180
 
 ' point sprite0 to $4040
 bank 4
-{x5E}{x5E}wpoke 0, $1001
-{x5E}{x5E}wpoke 2, $1001+8*6
-{x5E}{x5E}wpoke 4, $1001+8*12
-{x5E}{x5E}wpoke 6, $1001+8*18
-{x5E}{x5E}wpoke 8, $1001+8*24
-{x5E}{x5E}wpoke 10, $1001+8*30
-{x5E}{x5E}wpoke 12, $1001+8*42
-{x5E}{x5E}wpoke 14, $1001+8*48
+for k=0 to 14 step 2
+  wpoke k, $1001+8*(3*k)
+next k
 
 ' set background, border
 background 6
@@ -114,48 +122,47 @@ border 14
 
 idx = 0
 {x5E}{x5E}oi=0:od=0
-.loop
 
+
+/----
+.loop
+'----
 ' select sprite frame
 bank 4
-poke 0, 1+8*idx
-poke 2, 1+8*(idx+6)
-poke 4, 1+8*(idx+12)
-poke 6, 1+8*(idx+18)
-poke 8, 1+8*(idx+24)
-value = $1001+8*(idx+30)
-poke 10, value and 255
-poke 11, (value / 256)
-value = $1001+8*(idx+42)
-poke 12, value and 255
-poke 13, (value / 256)
-value = $1001+8*(idx+48)
-poke 14, value and 255
-poke 15, (value / 256)
+for k=0 to 7
+  wpoke k*2, $1001+8*(idx+6*k)
+next k
+
 gosub drawolivia
+
 sleep .3
 idx=idx+1
 if idx=6 then idx=0
 get a$:if a$="" then goto loop
 
+
+'-----
 .ender
+'-----
 for idx = 0 to 7
   sprite idx,0
 next idx
 
 ' switch to 80x25
 bank 128
-poke $d031, $e0
+poke $d031, $e0 ' 1110 0000 = H640,FAST,ATTR
 
 ' restore SCNPTR to bank 0 - $0800
-{x5E}{x5E}wpoke $d060, $0800
-poke $d062, 0
+wpoke SCRNPTRLSB, $0800
+poke SCRNPTRBNK, 0
 
 palette restore
 end
 
-.drawolivia
 
+'----------
+.drawolivia
+'----------
 #declare x,y,z,bval,olidx
 {x5E}{x5E}if oi=0 then lo=$46ca0
 {x5E}{x5E}if oi>0 then lo=$50000+4000*(oi-1)
