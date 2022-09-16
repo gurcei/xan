@@ -6,6 +6,9 @@ all: bigsprite.d81
 oli/%.bin: oli/%.png pngprepare
 	./pngprepare 80x50_32 $< $@
 
+paper/%.bin: paper/*.png pngprepare
+	./pngprepare hires_spr $< $@
+
 pngprepare: pngprepare.c
 	$(CC) -I/usr/local/include -L/usr/local/lib -g -O0 -o pngprepare pngprepare.c -lpng
 
@@ -17,6 +20,9 @@ BINS = $(patsubst %.png,%.bin,$(PNGS))
 
 OLIPNGS = $(shell ls oli/*.png)
 OLIBINS = $(patsubst %.png,%.bin,$(OLIPNGS))
+
+PAPERPNGS = $(shell ls paper/*.png)
+PAPERBINS = $(patsubst %.png,%.bin,$(PAPERPNGS))
 
 muse.dat: $(BINS) $(OLIBINS) addpalette
 	rm -f bigsprite.prg
@@ -35,6 +41,13 @@ oli.dat: $(OLIBINS)
 		if [ "$$bin" != "oli/s00.bin" ] ; then \
 			cat $$bin >> oli.dat ; \
 		fi \
+	done
+
+paper.dat: $(PAPERBINS)
+	rm -f paper.dat
+	touch paper.dat
+	for bin in $(PAPERBINS) ; do \
+		cat $$bin >> paper.dat ; \
 	done
 
 pushdat: muse.dat

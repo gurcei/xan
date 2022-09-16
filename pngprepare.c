@@ -631,6 +631,24 @@ void process_file(int mode, char *outputfilename)
       }
     }
   }
+  /* ============================ */
+  if (mode==6) { // mode == hires_spr
+    int xx = 0;
+    for (y=0; y<height; y++) {
+      png_byte* row = row_pointers[y];
+      for (x=0; x<width; x+=8) {
+        int byteval = 0;
+        for(xx=x;xx<x+8;xx++) {
+          png_byte* ptr = &(row[xx*multiplier]);
+          int r=ptr[0], g=ptr[1],b=ptr[2];
+          if (!r && !g && !b)
+            byteval |= (1 << (7 - (xx-x)));
+        }
+        fputc(byteval, outfile);
+      }
+    }
+    fputc(0, outfile);
+  }
 }
  
 /* ============================================================= */
@@ -640,7 +658,7 @@ int mode=-1;
 int main(int argc, char **argv)
 {
   if (argc < 4) {
-    fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires> <file_in> <file_out> <options>\n");
+    fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires|hires_spr> <file_in> <file_out> <options>\n");
     exit(-1);
   }
 
@@ -651,6 +669,7 @@ int main(int argc, char **argv)
   if (!strcasecmp("4sprmulti",argv[1])) mode=3;
   if (!strcasecmp("gihires",argv[1])) mode=4;
   if (!strcasecmp("80x50_32",argv[1])) mode=5;
+  if (!strcasecmp("hires_spr",argv[1])) mode=6;
   if (mode==-1) {
     fprintf(stderr,"Usage: program_name <logo|charrom|hires|4sprmulti|gihires> <file_in> <file_out> <options>\n");
     exit(-1);
