@@ -4,174 +4,228 @@
 '------------
 .declarations
 '------------
-#declare a$ = ""
-#declare idx = 0
-#declare value = 0
-#declare loc
-#declare k
+  #declare a$ = ""
+  #declare idx = 0
+  #declare value = 0
+  #declare loc
+  #declare k
 
-#declare SPRX64EN = $d057
-#declare SPRHGTEN = $d055
-#declare SPRHGT   = $d056
+  #declare SPRX64EN = $d057
+  #declare SPRHGTEN = $d055
+  #declare SPRHGT   = $d056
 
-#declare SCRNPTRLSB = $d060
-#declare SCRNPTRBNK = $d062
+  #declare SCRNPTRLSB = $d060
+  #declare SCRNPTRBNK = $d062
 
-#declare SPRPTR16 = $d06e
-#declare SPRPTRADR = $d06c
-#declare SPRPTRBNK = $d06e
+  #declare SPRPTR16 = $d06e
+  #declare SPRPTRADR = $d06c
+  #declare SPRPTRBNK = $d06e
 
-#declare HOTREG¯7 = $d05d
-
+  #declare HOTREG¯7 = $d05d
 
 '----
-.init
+.main
 '----
-' switch to 80x50
-bank 128
-setbit HOTREG¯7, 7
-poke $d031, $e8 ' 1110 1000 = H640,FAST,ATTR,V400
-
-' move SCRNPTR to bank4 - $8000
-wpoke SCRNPTRLSB, $8000
-poke SCRNPTRBNK,$04
-
-' let all sprites be 64 bits wide
-poke SPRX64EN, 255
-
-' let all sprites be 64 bits high
-poke SPRHGTEN, 255
-poke SPRHGT, 64
-
-' $4,0000 +------------------+
-'         ! SPRPTR (8 words) !
-' $4,0040 +------------------+ <-- sprptr $1001
-'         ! MUSE#1 - frame 0 !
-' $4,0240 +------------------+ <-- sprptr $1001 + 8
-'         ! MUSE#1 frames1-5 !
-' $4,0E40 +------------------+ <-- sprptr $1001 + 8*6
-'         ! MUSE#2 frames0-5 !
-' $4,1A40 +------------------+ <-- sprptr $1001 + 8*12
-'         ! MUSES#3 to #9    !
-' $4,6C40 +------------------+
-'         ! 32 x RGB PALETTE !
-' $4,6CA0 +------------------+
-
-' $4,8000 +------------------+
-'         ! SCREEN MEM 80x50 !
-' $4,8FA0 +------------------+
+  gosub p1¯drop¯papers
+  gosub p2¯colour¯cycle¯static¯muses
+  gosub p3¯animate¯muse1¯2¯3¯4
+  gosub p4¯pulse¯background¯mural¯to¯chorus
+  gosub p5¯animate¯muse¯5¯6¯7¯8¯9
+  gosub p6¯pulse¯background¯mural¯2nd¯time
+  gosub p7¯big¯olivia¯with¯sprites
+  gosub p8¯muses¯return¯to¯petscii¯mural
+  gosub p9¯pulse¯background¯mural¯3rd¯time
+  gosub p10¯petscii¯dancers¯come¯to¯life
+  gosub p11¯expanded¯or¯tiled¯sprites
+  gosub p12¯muses¯dancing¯in¯circle
+  gosub p13¯hollywood¯dash
+  gosub p14¯finale
 
 
-' enforce sprites into BANK4 and SPRPTR16 bit turned on
-poke SPRPTRBNK, 4+128           
-wpoke SPRPTRADR, 0
+'==============
+.p1¯drop¯papers
+'==============
+  gosub p1¯init
+  gosub p1¯loop
+  gosub p1¯ender
+  return
 
-' load 64x64 sprite data
-{x5E}{x5E}bload "muse.dat",p($40040),r
 
-' load oli frames to bank 5
-{x5E}{x5E}bload "oli.dat",p($50000),r
+.p1¯init
+'-------
+  ' draw background mural
+  return
 
-' switch palette
-#declare red,green,blue
-loc=$46c40
-for idx=0 to 31
-  red=peek(loc):loc=loc+1
-  green=peek(loc):loc=loc+1
-  blue=peek(loc):loc=loc+1
-' print "r=";red;", g=";green;", b=";blue
-  poke $d100+idx,red
-  poke $d200+idx,green
-  poke $d300+idx,blue
-next idx
 
-' clear 80x50 chars and colour ram
-for idx=0 to 3999:poke $48000+idx,160:poke $ff80000+idx,6:next idx
+.p1¯loop
+'-------
+  ' drop paper sprites down
+  ' start fading colours from gry to coloured as the paper drops
+  return
+
+.p1¯ender
+'--------
+  return
+
+
+'==========================
+.p7¯big¯olivia¯with¯sprites
+'==========================
+  gosub p7¯init
+  gosub p7¯loop
+  gosub p7¯ender
+  return
+
+'----
+.p7¯init
+'----
+  ' switch to 80x50
+  bank 128
+  setbit HOTREG¯7, 7
+  poke $d031, $e8 ' 1110 1000 = H640,FAST,ATTR,V400
+
+  ' move SCRNPTR to bank4 - $8000
+  wpoke SCRNPTRLSB, $8000
+  poke SCRNPTRBNK,$04
+
+  ' let all sprites be 64 bits wide
+  poke SPRX64EN, 255
+
+  ' let all sprites be 64 bits high
+  poke SPRHGTEN, 255
+  poke SPRHGT, 64
+
+  ' $4,0000 +------------------+
+  '         ! SPRPTR (8 words) !
+  ' $4,0040 +------------------+ <-- sprptr $1001
+  '         ! MUSE#1 - frame 0 !
+  ' $4,0240 +------------------+ <-- sprptr $1001 + 8
+  '         ! MUSE#1 frames1-5 !
+  ' $4,0E40 +------------------+ <-- sprptr $1001 + 8*6
+  '         ! MUSE#2 frames0-5 !
+  ' $4,1A40 +------------------+ <-- sprptr $1001 + 8*12
+  '         ! MUSES#3 to #9    !
+  ' $4,6C40 +------------------+
+  '         ! 32 x RGB PALETTE !
+  ' $4,6CA0 +------------------+
+
+  ' $4,8000 +------------------+
+  '         ! SCREEN MEM 80x50 !
+  ' $4,8FA0 +------------------+
+
+
+  ' enforce sprites into BANK4 and SPRPTR16 bit turned on
+  poke SPRPTRBNK, 4+128           
+  wpoke SPRPTRADR, 0
+
+  ' load 64x64 sprite data
+  {x5E}{x5E}bload "muse.dat",p($40040),r
+
+  ' load oli frames to bank 5
+  {x5E}{x5E}bload "oli.dat",p($50000),r
+
+  ' switch palette
+  #declare red,green,blue
+  loc=$46c40
+  for idx=0 to 31
+    red=peek(loc):loc=loc+1
+    green=peek(loc):loc=loc+1
+    blue=peek(loc):loc=loc+1
+    ' print "r=";red;", g=";green;", b=";blue
+    poke $d100+idx,red
+    poke $d200+idx,green
+    poke $d300+idx,blue
+  next idx
+
+  ' clear 80x50 chars and colour ram
+  for idx=0 to 3999:poke $48000+idx,160:poke $ff80000+idx,6:next idx
       
-' display sprite
-#declare sprclr,offx
-sprclr = 30
-offx=25
-sprite 0,1,sprclr
-movspr 0,0+offx,50
-sprite 1,1,sprclr
-movspr 1,85+offx,50
-sprite 2,1,sprclr
-movspr 2,171+offx,50
-sprite 3,1,sprclr
-movspr 3,256+offx,50
+  ' display sprite
+  #declare sprclr,offx
+  sprclr = 30
+  offx=25
+  sprite 0,1,sprclr
+  movspr 0,0+offx,50
+  sprite 1,1,sprclr
+  movspr 1,85+offx,50
+  sprite 2,1,sprclr
+  movspr 2,171+offx,50
+  sprite 3,1,sprclr
+  movspr 3,256+offx,50
 
-sprite 4,1,sprclr
-movspr 4,0+offx+8,180
-sprite 5,1,sprclr
-movspr 5,85+offx+8,180
-sprite 6,1,sprclr
-movspr 6,171+offx,180
-sprite 7,1,sprclr
-movspr 7,256+offx,180
+  sprite 4,1,sprclr
+  movspr 4,0+offx+8,180
+  sprite 5,1,sprclr
+  movspr 5,85+offx+8,180
+  sprite 6,1,sprclr
+  movspr 6,171+offx,180
+  sprite 7,1,sprclr
+  movspr 7,256+offx,180
 
-' point sprite0 to $4040
-bank 4
-for k=0 to 14 step 2
-  wpoke k, $1001+8*(3*k)
-next k
+  ' point sprite0 to $4040
+  bank 4
+  for k=0 to 14 step 2
+    wpoke k, $1001+8*(3*k)
+  next k
 
-' set background, border
-background 6
-border 14
+  ' set background, border
+  background 6
+  border 14
 
-idx = 0
-{x5E}{x5E}oi=0:od=0
+  idx = 0
+  {x5E}{x5E}oi=0:od=0
+  return
 
 
 /----
-.loop
+.p7¯loop
 '----
-' select sprite frame
-bank 4
-for k=0 to 7
-  wpoke k*2, $1001+8*(idx+6*k)
-next k
+  ' select sprite frame
+  bank 4
+  for k=0 to 7
+    wpoke k*2, $1001+8*(idx+6*k)
+  next k
 
-gosub drawolivia
+  gosub drawolivia
 
-sleep .3
-idx=idx+1
-if idx=6 then idx=0
-get a$:if a$="" then goto loop
+  sleep .3
+  idx=idx+1
+  if idx=6 then idx=0
+  get a$:if a$="" then goto loop
+  return
 
 
 '-----
-.ender
+.p7¯ender
 '-----
-for idx = 0 to 7
-  sprite idx,0
-next idx
+  for idx = 0 to 7
+    sprite idx,0
+  next idx
 
-' switch to 80x25
-bank 128
-poke $d031, $e0 ' 1110 0000 = H640,FAST,ATTR
+  ' switch to 80x25
+  bank 128
+  poke $d031, $e0 ' 1110 0000 = H640,FAST,ATTR
 
-' restore SCNPTR to bank 0 - $0800
-wpoke SCRNPTRLSB, $0800
-poke SCRNPTRBNK, 0
+  ' restore SCNPTR to bank 0 - $0800
+  wpoke SCRNPTRLSB, $0800
+  poke SCRNPTRBNK, 0
 
-palette restore
-end
+  palette restore
+  end
 
 
 '----------
 .drawolivia
 '----------
-#declare x,y,z,bval,olidx
-{x5E}{x5E}if oi=0 then lo=$46ca0
-{x5E}{x5E}if oi>0 then lo=$50000+4000*(oi-1)
+  #declare x,y,z,bval,olidx
+  {x5E}{x5E}if oi=0 then lo=$46ca0
+  {x5E}{x5E}if oi>0 then lo=$50000+4000*(oi-1)
 
-loc=$46ca0 ' first olivia frame
-{x5E}{x5E}edma 0,4000,lo,$ff80000
+  loc=$46ca0 ' first olivia frame
+  {x5E}{x5E}edma 0,4000,lo,$ff80000
 
-{x5E}{x5E}if od = 0 then oi = oi + 1:if oi > 16 then od = 1:oi=16
-{x5E}{x5E}if od = 1 then oi = oi - 1:if oi < 1 then od = 0
+  {x5E}{x5E}if od = 0 then oi = oi + 1:if oi > 16 then od = 1:oi=16
+  {x5E}{x5E}if od = 1 then oi = oi - 1:if oi < 1 then od = 0
 
-return
+  return
 ÿ
