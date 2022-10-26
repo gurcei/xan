@@ -58,6 +58,10 @@ pushdat: muse.dat paper.dat
 getbas:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read grab grab.prg
 	petcat -65 -o grab.bas -- grab.prg
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read alive alive.prg
+	petcat -65 -o alive.bas -- alive.prg
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read magic magic.prg
+	petcat -65 -o magic.bas -- magic.prg
 
 bigsprite.prg: c:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
