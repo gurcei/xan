@@ -641,8 +641,9 @@ void process_file(int mode, char *outputfilename)
         for(xx=x;xx<x+8;xx++) {
           png_byte* ptr = &(row[xx*multiplier]);
           int r=ptr[0], g=ptr[1],b=ptr[2];
-          if (!r && !g && !b)
+          if (!r && !g && !b) {
             byteval |= (1 << (7 - (xx-x)));
+          }
         }
         fputc(byteval, outfile);
       }

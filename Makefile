@@ -6,7 +6,7 @@ all: bigsprite.d81
 oli/%.bin: oli/%.png pngprepare
 	./pngprepare 80x50_32 $< $@
 
-paper/%.bin: paper/*.png pngprepare
+paper/%.bin: paper/%.png pngprepare
 	./pngprepare hires_spr $< $@
 
 pngprepare: pngprepare.c
@@ -62,14 +62,15 @@ getbas:
 bigsprite.prg: c:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
 
-bigsprite.d81: muse.dat bigsprite.prg
+bigsprite.d81: muse.dat paper.dat bigsprite.prg
 	rm -f bigsprite.prg
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg
 	rm -f bigsprite.d81
 	c1541 -format bigsprite,gi d81 bigsprite.d81
 	c1541 -attach bigsprite.d81 -write bigsprite.prg bigsprite
-	c1541 -attach bigsprite.d81 -write muse.dat -write oli.dat
-	c1541 -attach bigsprite.d81 -write paper.dat -write paper.dat
+	c1541 -attach bigsprite.d81 -write muse.dat
+	c1541 -attach bigsprite.d81 -write oli.dat
+	c1541 -attach bigsprite.d81 -write paper.dat
 	c1541 -attach bigsprite.d81 -write bigsprite.el bigsprite.el,s
 
 clean:

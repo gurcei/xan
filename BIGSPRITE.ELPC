@@ -9,6 +9,8 @@
   #declare loc
   #declare k
   #declare sprite_frame_idx(8)
+  #declare sprite_x(8)
+  #declare sprite_y(8)
 
   #declare SPRX64EN = $d057
   #declare SPRHGTEN = $d055
@@ -69,17 +71,31 @@
   ' prepare all sprite
   for k = 0 to 7
     sprite_frame_idx(k) = int(rnd(1)*13)
-    sprite k, 1, 13
-    movspr k, 30+50*k, 50 + 20*k
+    sprite_x(k) = 30+40*k
+    sprite_y(k) = int(rnd(1)*5)*5
+    sprite k, 1, 15
+    movspr k, sprite_x(k), sprite_y(k)
     wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
   next k
-  getkey a$
   return
 
 
 .p1_loop
 '-------
   ' drop paper sprites down
+  for k = 0 to 7
+    if int(rnd(1)*3) = 0 then begin
+      sprite_frame_idx(k) = mod(sprite_frame_idx(k)+1,13)
+    bend
+    sprite_y(k) = sprite_y(k) + int(rnd(1)*3)
+    sprite_x(k) = sprite_x(k) + int(rnd(1)*5)-2
+    movspr k, sprite_x(k), sprite_y(k)
+    wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
+  next k
+
+  sleep .05
+  get a$:if a$="" then goto p1_loop
+
   ' start fading colours from gry to coloured as the paper drops
   return
 
