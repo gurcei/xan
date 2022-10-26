@@ -50,9 +50,10 @@ paper.dat: $(PAPERBINS)
 		cat $$bin >> paper.dat ; \
 	done
 
-pushdat: muse.dat
+pushdat: muse.dat paper.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete oli.dat -write oli.dat
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete paper.dat -write paper.dat
 
 getbas:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read grab grab.prg
@@ -68,6 +69,7 @@ bigsprite.d81: muse.dat bigsprite.prg
 	c1541 -format bigsprite,gi d81 bigsprite.d81
 	c1541 -attach bigsprite.d81 -write bigsprite.prg bigsprite
 	c1541 -attach bigsprite.d81 -write muse.dat -write oli.dat
+	c1541 -attach bigsprite.d81 -write paper.dat -write paper.dat
 	c1541 -attach bigsprite.d81 -write bigsprite.el bigsprite.el,s
 
 clean:

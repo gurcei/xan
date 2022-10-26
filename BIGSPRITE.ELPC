@@ -1,6 +1,5 @@
 #output "bigsprite"
 
-
 '------------
 .declarations
 '------------
@@ -26,7 +25,7 @@
 '----
 .main
 '----
-  'gosub p1_drop_papers
+  gosub p1_drop_papers
   'gosub p2_colour_cycle_static_muses
   'gosub p3_animate_muse1_2_3_4
   'gosub p4_pulse_background_mural_to_chorus
@@ -98,21 +97,36 @@
   ' $4,0000 +------------------+
   '         ! SPRPTR (8 words) !
   ' $4,0040 +------------------+ <-- sprptr $1001
+  '         ! MUSE.DAT         !
+  '         ! ========         !
   '         ! MUSE#1 - frame 0 !
-  ' $4,0240 +------------------+ <-- sprptr $1001 + 8
+  ' $4,0240 +..................+ <-- sprptr $1001 + 8
   '         ! MUSE#1 frames1-5 !
-  ' $4,0E40 +------------------+ <-- sprptr $1001 + 8*6
+  ' $4,0E40 +..................+ <-- sprptr $1001 + 8*6
   '         ! MUSE#2 frames0-5 !
-  ' $4,1A40 +------------------+ <-- sprptr $1001 + 8*12
+  ' $4,1A40 +..................+ <-- sprptr $1001 + 8*12
   '         ! MUSES#3 to #9    !
-  ' $4,6C40 +------------------+
+  ' $4,6C40 +..................+
   '         ! 32 x RGB PALETTE !
-  ' $4,6CA0 +------------------+
+  ' $4,6CA0 +..................+
+  '         ! oli - frame 0    !
+  ' $4,7C40 +------------------+
+  '         ! PAPER.DAT        !
+  '         ! =========        !
+  '         ! PAPER - frame 0  !
+  ' $4,7C80 +..................+
+  '         ! PAPER - frame 1  !
+  ' $4,7CC0 +..................+
+  '         ! PAPER frm 2-12   !
+  ' $4,7F80 +------------------+
 
   ' $4,8000 +------------------+
   '         ! SCREEN MEM 80x50 !
   ' $4,8FA0 +------------------+
 
+  ' $5,0000 +------------------+
+  '         ! OLI.DAT          !
+  ' $5,FA00 +------------------+
 
   ' enforce sprites into BANK4 and SPRPTR16 bit turned on
   poke SPRPTRBNK, 4+128           
@@ -120,6 +134,9 @@
 
   ' load 64x64 sprite data
   {x5E}{x5E}bload "muse.dat",p($40040),r
+
+  ' load 13 standard sprites for paper
+  {x5E}{x5E}bload "paper.dat",p($47c40),r
 
   ' load oli frames to bank 5
   {x5E}{x5E}bload "oli.dat",p($50000),r
