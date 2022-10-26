@@ -8,6 +8,7 @@
   #declare value = 0
   #declare loc
   #declare k
+  #declare sprite_frame_idx(8)
 
   #declare SPRX64EN = $d057
   #declare SPRHGTEN = $d055
@@ -52,7 +53,27 @@
 
 .p1_init
 '-------
-  ' draw background mural
+  ' load 13 standard sprites for paper
+  ^^bload "paper.dat",p($47c40),r
+
+  ' disable any 64-bit wide sprites
+  poke SPRX64EN, 0
+
+  ' all sprites normal height
+  poke SPRHGTEN, 0
+
+  ' enforce sprites into BANK4 and SPRPTR16 bit turned on
+  poke SPRPTRBNK, 4+128
+  wpoke SPRPTRADR, 0
+
+  ' prepare all sprite
+  for k = 0 to 7
+    sprite_frame_idx(k) = int(rnd(1)*13)
+    sprite k, 1, 13
+    movspr k, 30+50*k, 50 + 20*k
+    wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
+  next k
+  getkey a$
   return
 
 
@@ -133,13 +154,10 @@
   wpoke SPRPTRADR, 0
 
   ' load 64x64 sprite data
-  {x5E}{x5E}bload "muse.dat",p($40040),r
-
-  ' load 13 standard sprites for paper
-  {x5E}{x5E}bload "paper.dat",p($47c40),r
+  ^^bload "muse.dat",p($40040),r
 
   ' load oli frames to bank 5
-  {x5E}{x5E}bload "oli.dat",p($50000),r
+  ^^bload "oli.dat",p($50000),r
 
   ' switch palette
   #declare red,green,blue
@@ -190,7 +208,7 @@
   border 14
 
   idx = 0
-  {x5E}{x5E}oi=0:od=0
+  ^^oi=0:od=0
   return
 
 
@@ -235,14 +253,14 @@
 .drawolivia
 '----------
   #declare x,y,z,bval,olidx
-  {x5E}{x5E}if oi=0 then lo=$46ca0
-  {x5E}{x5E}if oi>0 then lo=$50000+4000*(oi-1)
+  ^^if oi=0 then lo=$46ca0
+  ^^if oi>0 then lo=$50000+4000*(oi-1)
 
   loc=$46ca0 ' first olivia frame
-  {x5E}{x5E}edma 0,4000,lo,$ff80000
+  ^^edma 0,4000,lo,$ff80000
 
-  {x5E}{x5E}if od = 0 then oi = oi + 1:if oi > 16 then od = 1:oi=16
-  {x5E}{x5E}if od = 1 then oi = oi - 1:if oi < 1 then od = 0
+  ^^if od = 0 then oi = oi + 1:if oi > 16 then od = 1:oi=16
+  ^^if od = 1 then oi = oi - 1:if oi < 1 then od = 0
 
   return
 ÿ
