@@ -21,67 +21,67 @@
   #declare SPRPTRADR = $d06c
   #declare SPRPTRBNK = $d06e
 
-  #declare HOTREG¯7 = $d05d
+  #declare HOTREG_7 = $d05d
 
 '----
 .main
 '----
-  gosub p1¯drop¯papers
-  gosub p2¯colour¯cycle¯static¯muses
-  gosub p3¯animate¯muse1¯2¯3¯4
-  gosub p4¯pulse¯background¯mural¯to¯chorus
-  gosub p5¯animate¯muse¯5¯6¯7¯8¯9
-  gosub p6¯pulse¯background¯mural¯2nd¯time
-  gosub p7¯big¯olivia¯with¯sprites
-  gosub p8¯muses¯return¯to¯petscii¯mural
-  gosub p9¯pulse¯background¯mural¯3rd¯time
-  gosub p10¯petscii¯dancers¯come¯to¯life
-  gosub p11¯expanded¯or¯tiled¯sprites
-  gosub p12¯muses¯dancing¯in¯circle
-  gosub p13¯hollywood¯dash
-  gosub p14¯finale
+  'gosub p1_drop_papers
+  'gosub p2_colour_cycle_static_muses
+  'gosub p3_animate_muse1_2_3_4
+  'gosub p4_pulse_background_mural_to_chorus
+  'gosub p5_animate_muse_5_6_7_8_9
+  'gosub p6_pulse_background_mural_2nd_time
+  gosub p7_big_olivia_with_sprites
+  'gosub p8_muses_return_to_petscii_mural
+  'gosub p9_pulse_background_mural_3rd_time
+  'gosub p10_petscii_dancers_come_to_life
+  'gosub p11_expanded_or_tiled_sprites
+  'gosub p12_muses_dancing_in_circle
+  'gosub p13_hollywood_dash
+  'gosub p14_finale
 
 
 '==============
-.p1¯drop¯papers
+.p1_drop_papers
 '==============
-  gosub p1¯init
-  gosub p1¯loop
-  gosub p1¯ender
+  gosub p1_init
+  gosub p1_loop
+  gosub p1_ender
   return
 
 
-.p1¯init
+.p1_init
 '-------
   ' draw background mural
   return
 
 
-.p1¯loop
+.p1_loop
 '-------
   ' drop paper sprites down
   ' start fading colours from gry to coloured as the paper drops
   return
 
-.p1¯ender
+.p1_ender
 '--------
   return
 
 
 '==========================
-.p7¯big¯olivia¯with¯sprites
+.p7_big_olivia_with_sprites
 '==========================
-  gosub p7¯init
-  gosub p7¯loop
-  gosub p7¯ender
+  gosub p7_init
+  gosub p7_loop
+  gosub p7_ender
   return
 
 '----
-.p7¯init
+.p7_init
 '----
   ' switch to 80x50
   bank 128
-  setbit HOTREG¯7, 7
+  setbit HOTREG_7, 7
   poke $d031, $e8 ' 1110 1000 = H640,FAST,ATTR,V400
 
   ' move SCRNPTR to bank4 - $8000
@@ -178,7 +178,7 @@
 
 
 /----
-.p7¯loop
+.p7_loop
 '----
   ' select sprite frame
   bank 4
@@ -191,12 +191,12 @@
   sleep .3
   idx=idx+1
   if idx=6 then idx=0
-  get a$:if a$="" then goto loop
+  get a$:if a$="" then goto p7_loop
   return
 
 
 '-----
-.p7¯ender
+.p7_ender
 '-----
   for idx = 0 to 7
     sprite idx,0
