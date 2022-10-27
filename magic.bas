@@ -9,7 +9,7 @@
    14 envelope 8,0,12,3,5,2,1100
    20 rem *** voice1 - guitar1 ***
    30 v1$(0)="t2o6m2 qdir qc.r qdir qc.r qdir qc.r qdir qc.r"
-   40 v1$(1)="t2o6m2 qdir qc.r qdir qc.r qdir qc.r qdir qc.r"
+   40 v1$(1)="t2o6m2 qdir qc.r qdir qc.r p9a ir qair p0idp9o5a o5iao6da q.g ido5a ibo6dg q.a igd o5bo6eg q.a ige o5ibo6dg q.a igd  o5bo6egqa ig#fe "
   200 rem *** voice2 - guitar2 ***
   210 v2$(0)="t2o5m4 qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
   220 v2$(1)="t2o5m4 qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
