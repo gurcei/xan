@@ -23,7 +23,7 @@
   610 v4$(0)=""
   620 v4$(1)="t4o5p0 qr m2id m4qd p5 m1o4#g h.a iaqa   o5q.e h#f ir #f#fa qg ig#f w m5 .g p9m2o4ia o5i.b.a sg#f agabab qg o4iab o5h#f sg#f q.e.d"
   630 v4$(2)="wdhrq.ric p5o5iddfq.gifd q.f sed hc iffaqgifd scp2h.d p5i.ric ddfq.gifd q.f sed hc iffaqgifd igp1h.a p7ira o6dd#dqdico5#ah.#aq.r iaa#aqaiagp1wap7ir"
-  640 v4$(2)=v4$(2)+"hri#fga"
+  640 v4$(2)=v4$(2)+"hri#fgaq.gi#fg#fherir dhdrr ir#fgaq.gi#fg#fherir dhd"
  2000 rem *** play loop ***
  2010 t=m(tt)
  2020 play v1$(t),v3$(t),v4$(t):sleep 0.05:play ,,,v2$(t),v3$(t),v4$(t)
