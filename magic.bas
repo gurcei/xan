@@ -1,5 +1,5 @@
     1 play
-    2 t=0:tt=0
+    2 t=0:tt=3
     3 dim m(10)
     4 m(0)=0:m(1)=1:m(2)=1:m(3)=2:m(4)=3
    10 dim v1$(10),v2$(10),v3$(10)
@@ -11,7 +11,7 @@
    30 v1$(0)="t2o6m2 qdir qc.r qdir qc.r qdir qc.r qdir qc.r"
    40 v1$(1)="t2o6m2 qdir qc.r qdir qc.r p9a ir qair p0idp9o5a o5iao6da q.g ido5a ibo6dg q.a igd o5bo6eg q.a ige o5ibo6dg q.a igd  o5bo6egqa ig#fe "
    50 v1$(2)="t2o6m2 qdir qc.r qdir qc.r"
-   60 v1$(2)=v1$(2)+"wrrrr rrrr"
+   60 v1$(2)="t2o6m2 qdir qc.r qdir qc.r  iddfq.difd o5q.#aho6cir o5#aq#ao6hcir iddfhdir  ddfq.difd o5q.#aho6cir o5#aq#ao6hcir o5q.a o6f ir"
   200 rem *** voice2 - guitar2 ***
   210 v2$(0)="t2o5m4 qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
   220 v2$(1)="t2o5m4 qair q#g.r qair q#g.r  o5 q.#c .d o6i#fd o5d#fao6q.d io5a#f  egbo6q.e o5ibg eao6#cq.e i#co5a egbo6q.e o5ibg eao6#cqe id#cd"
