@@ -6,7 +6,7 @@
    11 envelope 2,3,3,3,10,0
    12 filter 1,100,1:filter 2,100,1:envelope 7,0,9,9,0,2,1100
    13 envelope 4,9,4,9,8
-   14 envelope 8,0,12,3,5,2,1100
+   14 envelope 8,0,12,3,5,2,1100:envelope 9,0,10,3,5,2,1100
    20 rem *** voice1 - guitar1 ***
    30 v1$(0)="t2o6m2 qdir qc.r qdir qc.r qdir qc.r qdir qc.r"
    40 v1$(1)="t2o6m2 qdir qc.r qdir qc.r p9a ir qair p0idp9o5a o5iao6da q.g ido5a ibo6dg q.a igd o5bo6eg q.a ige o5ibo6dg q.a igd  o5bo6egqa ig#fe "
@@ -19,10 +19,11 @@
   410 v3$(0)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a   o2id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
   420 v3$(1)="x1t7o2m1 id qr p1 icd qr icd sf#f qd qr ir o1a t8 o2q.#cqd ide#f q.#f o1a ia o2q#c o1q.e e iebg q.a a ia o2qc q.e e ie o1 qb q.a a o2ie qa"
   430 v3$(2)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
+  440 v3$(2)=v3$(2)+"t9o2idddddddd o1#a#a#a#a#a#a#a#a #a#a#a#a#a#a#a#a o2ddfqdiddddddddddd o1#a#a#a#a#a#a#a#a #a#a#a o2qciccc o1q.aaiaaa"
   600 rem *** voice4 - melody ***
   610 v4$(0)=""
   620 v4$(1)="t4o5p0 qr m2id m4qd p5 m1o4#g h.a iaqa   o5q.e h#f ir #f#fa qg ig#f w m5 .g p9m2o4ia o5i.b.a sg#f agabab qg o4iab o5h#f sg#f q.e.d"
-  630 v4$(2)="wdhrq.ric p5o5iddfq.gifd q.f sed hc iffaqgifd scp2h.d p5i.ric ddfq.gifd q.f sed hc iffaqgifd igp1h.a p7ira o6dd#dqdico5#ah.#aq.r iaa#aqaiagp1wap7ir"
+  630 v4$(2)="o5t4p7wdhrq.ricp5o5iddfq.gifdq.fsedhciffaqgifdscp2h.dp5i.ricddfq.gifd q.f sed hc iffaqgifd igp1h.a p7ira o6dd#dqdico5#ah.#aq.r iaa#aqaiagp1wap7ir"
   640 v4$(2)=v4$(2)+"hri#fgaq.gi#fg#fherir dhdrr ir#fgaq.gi#fg#fherir dhd"
  2000 rem *** play loop ***
  2010 t=m(tt)
