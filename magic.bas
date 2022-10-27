@@ -17,7 +17,7 @@
   420 v3$(1)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a   o2id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
   600 rem *** voice4 ***
   610 v4$(0)=""
-  620 v4$(1)="t4o5p0 qr m2id m4qd p5 m1o4#g ha
+  620 v4$(1)="t4o5p0 qr m2id m4qd p5 m1o4#g h.a iaqa   o5q.e h#f ir #f#fa qg ig#f w m9 .g p9m2o4ia o5i.b.a sg#f agabab qg o4iab o5q.#f sg#f q.e.d"
  2000 rem *** play loop ***
  2010 t=m(tt)
  2020 play v1$(t),v3$(t),v4$(t):sleep 0.05:play ,,,v2$(t),v3$(t),v4$(t)
