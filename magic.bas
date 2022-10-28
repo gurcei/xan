@@ -16,7 +16,7 @@
   200 rem *** voice2 - guitar2 ***
   210 v2$(0)="t2o5m4 qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
   220 v2$(1)="t2o5m4 qair q#g.r qair q#g.r  o5 q.#c .d o6i#fd o5d#fao6q.d io5a#f  egbo6q.e o5ibg eao6#cq.e i#co5a egbo6q.e o5ibg eao6#cqe id#cd"
-  230 v2$(2)="t2o5m4 qair q#g.r qair q#g.r"
+  230 v2$(2)="t2o5m4 qair q#g.r qair q#g.r  iaao6co5q.aiga q.fhg ir ifqf hg ir iaao6co5ha ir  aao6co5q.aiga q.fhg irfqf hg ir q.e .a o6e "
   400 rem *** voice3 - bass ***
   410 v3$(0)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a   o2id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
   420 v3$(1)="x1t7o2m1 id qr p1 icd qr icd sf#f qd qr ir o1a t8 o2q.#cqd ide#f q.#f o1a ia o2q#c o1q.e e iebg q.a a ia o2qc q.e e ie o1 qb q.a a o2ie qa"
