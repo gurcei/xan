@@ -17,6 +17,8 @@
   210 v2$(0)="t2o5m4 qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
   220 v2$(1)="t2o5m4 qair q#g.r qair q#g.r  o5 q.#c .d o6i#fd o5d#fao6q.d io5a#f  egbo6q.e o5ibg eao6#cq.e i#co5a egbo6q.e o5ibg eao6#cqe id#cd"
   230 v2$(2)="t2o5m4 qair q#g.r qair q#g.r  iaao6co5q.aiga q.fhg ir ifqf hg ir iaao6co5ha ir  aao6co5q.aiga q.fhg irfqf hg ir q.e .a o6e "
+  240 v2$(3)="t2o5m4 igg#g hg ir q.d hg ir ddghd ir ddaqgiaqd q.a.g#f .#a .a g  o5qeigq#aig#ao6c qair q#g.r qair q#g.r q.#a .a g o5qeigq#aig#ao6c"
+  250 v2$(3)=v2$(3)+"qair q#g.r qair q#g.r qair q#g.r qair q#g.r"
   400 rem *** voice3 - bass ***
   410 v3$(0)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a   o2id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
   420 v3$(1)="x1t7o2m1 id qr p1 icd qr icd sf#f qd qr ir o1a t8 o2q.#cqd ide#f q.#f o1a ia o2q#c o1q.e e iebg q.a a ia o2qc q.e e ie o1 qb q.a a o2ie qa"
@@ -34,6 +36,6 @@
  2010 t=m(tt)
  2020 play v1$(t),v3$(t),v4$(t):sleep 0.05:play ,,,v2$(t),v3$(t),v4$(t)
  2030 if rplay(1) = 1 then goto 2030
- 2040 tt=tt+1:if tt<5 then goto 2000
- 2050 end
+ 2040 tt=tt+1:if tt=5 then tt=1
+ 2050 goto 2000
  4000 play "c","c","c",""
