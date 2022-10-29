@@ -23,7 +23,9 @@
   ' misc
   ' ----
   #declare k,m,n
-
+  #declare rainbowstr$
+  #declare rainbow_x, rainbow_y
+  #declare plen=0
 
 '====
 .main
@@ -45,6 +47,7 @@
   gosub draw_logo
   gosub fade_to_defaults
   gosub cycle_alt_palette_loop
+  gosub fade_to_black
 
   return
 
@@ -60,13 +63,25 @@
 
 .anim_draw_presents
 '------------------
-  #declare plen=0
   #declare pres$="presents..."
 
   if plen < len(pres$) then begin
     plen = plen + 1
-
+    rainbowstr$=left$(pres$,plen)
+    rainbow_x = 36
+    rainbow_y = 24
+    gosub print_rainbow_str
   bend
+  return
+
+.print_rainbow_str
+  #declare rain_idx
+
+  cursor rainbow_x, rainbow_y
+  for rain_idx=1 to len(rainbowstr$)
+    foreground mod(rain_idx-1,16)+16
+    print mid$(rainbowstr$,rain_idx,1);
+  next rain_idx
   return
 
 .cycle_alt_palette
@@ -98,6 +113,15 @@
 '-------------
   for fadeval=0 to 16
     gosub fade_colours_to_white
+    sleep .05
+  next fadeval
+  return
+
+.fade_to_black
+'-------------
+  gosub store_curr_colours
+  for fadeval=0 to 16
+    gosub fade_colours_to_black
     sleep .05
   next fadeval
   return
@@ -171,6 +195,16 @@
     poke $d100+k, curr_red(k) + (default_red(k)-curr_red(k)) * tempval
     poke $d200+k, curr_green(k) + (default_green(k)-curr_green(k)) * tempval
     poke $d300+k, curr_blue(k) + (default_blue(k)-curr_blue(k)) * tempval
+  next k
+  return
+
+.fade_colours_to_black
+'---------------------
+  tempval = (16-fadeval) / 16
+  for k = 0 to 31
+    poke $d100+k, curr_red(k) * tempval
+    poke $d200+k, curr_green(k) * tempval
+    poke $d300+k, curr_blue(k) * tempval
   next k
   return
 
