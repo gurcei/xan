@@ -13,13 +13,46 @@
 '====
 .main
 '====
-  gosub init_music
-  ' gosub bas_logo
+  gosub init
+  gosub bas_logo
   ' gosub xanadu_title
   ' gosub petscii_story
 
   ' todo: load next part of demo (dancing muses)
   end
+
+
+'========
+.bas_logo
+'========
+  background 1
+  border 1
+  ^^edma 0, 2000, $40000, $800
+  ^^edma 0, 2000, $407d0, $ff80000
+  gosub poll_play
+  return
+
+'====
+.init
+'====
+  ' switch back to upper-case
+  poke $d018, peek($d018) and $fd
+
+  ^^bload "intro.dat",p($40000),r
+
+  ' $4,0000 +------------------+ INTRO.DAT
+  '         ! BAS logo chars   !
+  ' $4,07D0 +..................+
+  '         ! BAS logo colors  !
+  ' $4,0FA0 +..................+
+  '         ! 32 x RGB PALETTE !
+  ' $4,1000 +..................+
+  '         ! TITLE colors     !
+  ' $4,270C +..................+
+
+  gosub init_music
+
+  return
 
 
 '==========
@@ -63,7 +96,7 @@
   v3$(2)="x1t7o2m1 id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
   v3$(2)=v3$(2)+"t9o2idddddddd o1#a#a#a#a#a#a#a#a #a#a#a#a#a#a#a#a o2ddfqdiddddddddddd o1#a#a#a#a#a#a#a#a #a#a#a t8o2qciccc o1q.aaiaaa"
   v3$(3)="o2q.ddiddd o1q.ggi#aa#a q.#a#ai#aq#a q.aaiaqa o2q.ddio1go2qd q.eeieqe o1q.aaiaqa t7o2 id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
-  v3$(3)=v3$(3)+"o2q.eeieqe o1q.aaiaqa t7o2 id qr p1 icd qr icd sf#f q ir o1ao2co1a  t7o2 id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
+  v3$(3)=v3$(3)+"o2q.eeieqe o1q.aaiaqa t7o2 id qr p1 icd qr icd sf#f qd ir o1ao2co1a  t7o2 id qr p1 icd qr icd sf#f qd ir o1ao2co1a"
 
   ' *** voice4 - melody ***
   ' -----------------------
@@ -72,12 +105,19 @@
   v4$(2)="o5t4p7wdhrq.ricp5o5iddfq.gifdq.fsedhciffaqgifdscp2h.dp5i.ricddfq.gifd q.f sed hc iffaqgifd igp1h.a p7ira"
   v4$(3)="t4 io6dd#dqdico5#ah.#aq.r iaa#aqaiagp1wap7ir"
   v4$(3)=v4$(3)+"hri#fgaq.gi#fg#fherir dhdrr ir#fgaq.gi#fg#fherir dhd"
+  return
 
-  ' *** play loop ***
-  ' -----------------
-  t=m(tt)
-  play v1$(t),v3$(t),v4$(t):sleep 0.05:play ,,,v2$(t),v3$(t),v4$(t)
-  if rplay(1) = 1 then goto 2030
-  tt=tt+1:if tt=5 then tt=1
-  goto 2000
+'---------
+.poll_play
+'---------
+  if rplay(1) then return
+
+  music_chunk_index=map_bar_to_chunk(bar_index)
+  
+  play v1$(music_chunk_index),v3$(music_chunk_index),v4$(music_chunk_index)
+  sleep .05
+  play ,,,v2$(music_chunk_index),v3$(music_chunk_index),v4$(music_chunk_index)
+
+  bar_index=bar_index+1:if bar_index=5 then bar_index=1
+  return
 ÿ
