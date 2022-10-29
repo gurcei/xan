@@ -10,6 +10,21 @@
   #declare map_bar_to_chunk(10)  ' old m()
   #declare v1$(4), v2$(4), v3$(4), v4$(4)
 
+  ' palette
+  ' -------
+  #declare default_red(32)
+  #declare default_green(32)
+  #declare default_blue(32)
+  #declare curr_red(32)
+  #declare curr_green(32)
+  #declare curr_blue(32)
+  #declare fadeval, tempval
+
+  ' misc
+  ' ----
+  #declare k,m,n
+
+
 '====
 .main
 '====
@@ -25,11 +40,75 @@
 '========
 .bas_logo
 '========
+  gosub poll_play
+  gosub fade_to_white
+  gosub draw_logo
+  gosub fade_to_defaults
+  gosub cycle_alt_palette_loop
+
+  return
+
+.cycle_alt_palette_loop
+'----------------------
+  for m = 0 to 32*4
+    gosub cycle_alt_palette
+    gosub poll_play
+    gosub anim_draw_presents
+    sleep .05
+  next m
+  return
+
+.anim_draw_presents
+'------------------
+  #declare plen=0
+  #declare pres$="presents..."
+
+  if plen < len(pres$) then begin
+    plen = plen + 1
+
+  bend
+  return
+
+.cycle_alt_palette
+'-----------------
+  #declare tempr, tempg, tempb
+  tempr = peek($d100+16)
+  tempg = peek($d200+16)
+  tempb = peek($d300+16)
+  for k = 16 to 30
+    poke $d100+k, peek($d100+k+1)
+    poke $d200+k, peek($d200+k+1)
+    poke $d300+k, peek($d300+k+1)
+  next k
+  poke $d100+31, tempr
+  poke $d200+31, tempg
+  poke $d300+31, tempb
+  return
+
+
+.draw_logo
+'---------
   background 1
   border 1
-  ^^edma 0, 2000, $40000, $800
-  ^^edma 0, 2000, $407d0, $ff80000
-  gosub poll_play
+  edma 0, 2000, $40000, $800
+  edma 0, 2000, $407d0, $ff80000
+  return
+
+.fade_to_white
+'-------------
+  for fadeval=0 to 16
+    gosub fade_colours_to_white
+    sleep .05
+  next fadeval
+  return
+
+.fade_to_defaults
+'----------------
+  gosub store_curr_colours
+  for fadeval=0 to 16
+    gosub fade_colours_to_defaults
+    sleep .05
+  next fadeval
   return
 
 '====
@@ -51,9 +130,49 @@
   ' $4,270C +..................+
 
   gosub init_music
+  gosub store_default_colours
 
   return
 
+.store_default_colours
+'---------------------
+  for k = 0 to 31
+    default_red(k)=peek($d100+k)
+    default_green(k)=peek($d200+k)
+    default_blue(k)=peek($d300+k)
+  next k
+  return
+
+.store_curr_colours
+'------------------
+  for k = 0 to 31
+    curr_red(k)=peek($d100+k)
+    curr_green(k)=peek($d200+k)
+    curr_blue(k)=peek($d300+k)
+  next k
+  return
+
+.fade_colours_to_white
+'---------------------
+  'INPUT: fadeval=0 to 16
+  tempval = fadeval / 16
+  for k = 0 to 31
+    poke $d100+k, default_red(k) + (15 - default_red(k)) * tempval
+    poke $d200+k, default_green(k) + (15 - default_green(k)) * tempval
+    poke $d300+k, default_blue(k) + (15 - default_blue(k)) * tempval
+  next k
+  return
+
+.fade_colours_to_defaults
+'------------------------
+  'INPUT: fadeval=0 to 16
+  tempval = fadeval / 16
+  for k = 0 to 31
+    poke $d100+k, curr_red(k) + (default_red(k)-curr_red(k)) * tempval
+    poke $d200+k, curr_green(k) + (default_green(k)-curr_green(k)) * tempval
+    poke $d300+k, curr_blue(k) + (default_blue(k)-curr_blue(k)) * tempval
+  next k
+  return
 
 '==========
 .init_music
@@ -118,6 +237,7 @@
   sleep .05
   play ,,,v2$(music_chunk_index),v3$(music_chunk_index),v4$(music_chunk_index)
 
-  bar_index=bar_index+1:if bar_index=5 then bar_index=1
+  bar_index=bar_index+1
+  if bar_index=5 then bar_index=1
   return
 ÿ

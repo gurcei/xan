@@ -6,6 +6,9 @@ all: bigsprite.d81
 oli/%.bin: oli/%.png pngprepare
 	./pngprepare 80x50_32 $< $@
 
+title/title.bin: title/title_32_clr.png pngprepare
+	./pngprepare 80x50_32 $< $@
+
 paper/%.bin: paper/%.png pngprepare
 	./pngprepare hires_spr $< $@
 
@@ -24,6 +27,14 @@ OLIBINS = $(patsubst %.png,%.bin,$(OLIPNGS))
 PAPERPNGS = $(shell ls paper/*.png)
 PAPERBINS = $(patsubst %.png,%.bin,$(PAPERPNGS))
 
+intro.dat: title/title.bin title/title.pal addpalette
+	rm -f intro.dat
+	touch intro.dat
+	cat petscii/bas_char.bin >> intro.dat
+	cat petscii/bas_color.bin >> intro.dat
+	./addpalette title/title.pal intro.dat
+	cat title/title.bin >> intro.dat
+
 muse.dat: $(BINS) $(OLIBINS) addpalette
 	rm -f bigsprite.prg
 	rm -f muse.dat
@@ -31,7 +42,7 @@ muse.dat: $(BINS) $(OLIBINS) addpalette
 	for bin in $(BINS) ; do \
 		cat $$bin >> muse.dat ; \
 	done
-	./addpalette
+	./addpalette xan.pal muse.dat
 	cat oli/s00.bin >> muse.dat
 
 oli.dat: $(OLIBINS)
@@ -50,10 +61,11 @@ paper.dat: $(PAPERBINS)
 		cat $$bin >> paper.dat ; \
 	done
 
-pushdat: muse.dat paper.dat
+pushdat: muse.dat paper.dat intro.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete muse.dat -write muse.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete oli.dat -write oli.dat
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete paper.dat -write paper.dat
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -delete intro.dat -write intro.dat
 
 getbas:
 	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\MEGA65.D81" -read grab grab.prg

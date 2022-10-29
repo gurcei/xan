@@ -8,11 +8,18 @@ int swap_nibble(int in)
   return (lo << 4) + hi;
 }
 
-void main(void)
+// arg1 = palette file
+// arg2 = .dat file to add palette to
+void main(int argc, char *argv[])
 {
+  if (argc != 3) {
+    printf("Invalid count of arguments!\n");
+    return;
+  }
+
   char s[256];
-  FILE* f=fopen("xan.pal", "rt");
-  FILE* fc=fopen("muse.dat", "ab");
+  FILE* f=fopen(argv[1], "rt");
+  FILE* fc=fopen(argv[2], "ab");
 
   // ignore first 3 lines
   fgets(s, 255, f);
