@@ -22,9 +22,9 @@
 
   ' I/O
   ' ---
-  #declare HOTREG_7 = $d05d
-  #declare SCRNPTRLSB = $d060
-  #declare SCRNPTRBNK = $d062
+  #define HOTREG_7 = $d05d
+  #define SCRNPTRLSB = $d060
+  #define SCRNPTRBNK = $d062
 
   ' misc
   ' ----
@@ -45,13 +45,106 @@
 .main
 '====
   gosub init
-  gosub bas_logo
-  gosub xanadu_title
-  ' gosub petscii_story
+  'gosub bas_logo
+  'gosub xanadu_title
+  gosub petscii_story
   gosub ender
 
   ' todo: load next part of demo (dancing muses)
   end
+
+' action names
+#define TXTGREY=0
+#define TXTTALK=1
+#define ANIM=2
+#define PAINTING=3
+#define REACTION=4
+#define ENDER=5
+
+' animations
+#define ANM_PAINT=0
+#define ANM_PONDER=1
+#define ANM_RIP=2
+
+'=============
+.petscii_story
+'=============
+  gosub switch_to_80x25_mode
+  gosub restore_screen_pointer
+  palette restore
+
+  #declare tstart, time, action, actanim, actpainting,
+  #declare actstr$, actx, acty, actdur, actreaction
+  #declare acttimer
+
+  tstart = ti
+
+  read time
+  action = -1
+
+  do while action <> ENDER
+    ' time to switch to next action?
+    if (ti-tstart) >= time then begin
+      read action
+      print "action=";action
+
+      acttimer=0
+
+      if action = TXTGREY then read actstr$, actx, acty
+      if action = TXTTALK then read actstr$, actdur
+      if action = ANIM then read actanim
+      if action = PAINTING then read actpainting:gosub draw_painting
+      if action = REACTION then read actstr$, actreaction, actdur
+      if action = ENDER then exit
+
+      read time ' time for next action
+      print "time=";time
+    bend
+
+    if action = TXTGREY then gosub draw_txt_grey
+    if action = TXTTALK then gosub draw_txt_talk
+    if action = ANIM then gosub draw_anim
+    if action = REACTION then gosub draw_reaction
+  loop
+
+  return
+
+.draw_txt_grey
+'-------------
+  return
+
+.draw_txt_talk
+'-------------
+  return
+
+.draw_anim
+'---------
+  return
+
+.draw_reaction
+'-------------
+  return
+
+.draw_painting
+'-------------
+  return
+
+.story_data
+'----------
+'      timestamp  action       text                            x   y  dur(sec)
+  data 0,         ANIM,        ANM_PONDER
+  data 2,         TXTGREY,     "here's sonny...",              2,  0
+  data 3,         TXTGREY,     "a struggling artist...",       15, 0
+  data 4,         TXTGREY,     "searching for inspiration...", 30, 0
+  data 5,         TXTTALK,     "hmm... what to draw today...",        3
+  data 9,         TXTTALK,     "i know!",                             2
+  data 11.5,      ANIM,        ANM_PAINT
+  data 13,        PAINTING,    1
+  data 15,        REACTION,    "blech!",                     1,     2
+  data 17,        ANIM,        ANM_RIP
+  data 20,        ENDER
+
+
 
 '=====
 .ender

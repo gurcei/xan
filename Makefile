@@ -34,6 +34,7 @@ intro.dat: title/title.bin title/title.pal addpalette
 	cat petscii/bas_color.bin >> intro.dat
 	./addpalette title/title.pal intro.dat
 	cat title/title.bin >> intro.dat
+	cat bank4.bin >> intro.dat
 
 muse.dat: $(BINS) $(OLIBINS) addpalette
 	rm -f bigsprite.prg
@@ -94,4 +95,3 @@ clean:
 	rm -f *.o
 	rm -f *.bin
 	rm -f *.dat
-
