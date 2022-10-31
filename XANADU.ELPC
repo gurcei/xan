@@ -63,11 +63,12 @@
 
 ' action names
 #define TXTGREY=0
-#define TXTTALK=1
-#define ANIM=2
-#define PAINTING=3
-#define REACTION=4
-#define ENDER=5
+#define TXTCLEAR=1
+#define TXTTALK=2
+#define ANIM=3
+#define PAINTING=4
+#define REACTION=5
+#define ENDER=6
 
 ' animations
 #define ANM_PAINT=0
@@ -108,7 +109,6 @@
   #declare acttimer
 
   tstart = ti
-
   read time
   action = -1
 
@@ -121,11 +121,13 @@
 
       if action = TXTGREY then read actstr$, actx, acty
       if action = TXTTALK then read actstr$, actdur
+      if action = TXTCLEAR then gosub clear_text
       if action = ANIM then read actanim
       if action = PAINTING then read actpainting:gosub draw_painting
       if action = REACTION then read actstr$, actreaction, actdur
       if action = ENDER then exit
 
+      tstart = ti
       read time ' time for next action
     bend
 
@@ -135,7 +137,12 @@
     if action = REACTION then gosub draw_reaction
     gosub poll_play
   loop
+  
+  return
 
+.clear_text
+'-----------
+  edma 3,80,32,$800
   return
 
 .draw_txt_grey
@@ -143,7 +150,7 @@
   if acttimer = -1 then return
   sleep .1
   cursor actx + acttimer, acty
-  print "{x98}";mid$(actstr$,1+acttimer,1);
+  print "{x98}{x4}";mid$(actstr$,1+acttimer,1);
   acttimer = acttimer + 1
   if acttimer >= len(actstr$) then acttimer = -1
   return
@@ -200,18 +207,19 @@
 
 .story_data
 '----------
-'      timestamp  action       text                            x   y  dur(sec)
-  data 0,         ANIM,        ANM_PONDER
-  data 2,         TXTGREY,     "here's sonny...",              4,  0
-  data 5,         TXTGREY,     "a struggling artist...",       22, 0
-  data 8.5,       TXTGREY,     "searching for inspiration...", 47, 0
-  data 12,        TXTTALK,     "hmm... what to draw today...",        3
-  data 14,        TXTTALK,     "i know!",                             2
-  data 16,        ANIM,        ANM_PAINT
-  data 18,        PAINTING,    1
-  data 20,        REACTION,    "blech!",                     1,     2
-  data 22,        ANIM,        ANM_RIP
-  data 24,        ENDER
+'      timedelta  action       text                            x   y  dur(sec)
+  data 0,        ANIM,        ANM_PONDER
+  data 2,        TXTGREY,     "here's sonny...",              4,  0
+  data 3,        TXTGREY,     "a struggling artist...",       22, 0
+  data 3.5,      TXTGREY,     "searching for inspiration...", 47, 0
+  data 3.5,      TXTCLEAR
+  data 1,        TXTTALK,     "hmm... what to draw today...",        3
+  data 2,        TXTTALK,     "i know!",                             2
+  data 2,        ANIM,        ANM_PAINT
+  data 2,        PAINTING,    1
+  data 2,        REACTION,    "blech!",                       1,     2
+  data 2,        ANIM,        ANM_RIP
+  data 2,        ENDER
 
 
 
