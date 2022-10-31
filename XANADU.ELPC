@@ -49,12 +49,16 @@
   #declare frm_idx = 0
   #declare frmw, frmh
 
+#declare anims(3,100) ' anim_idx, anim_data
+#declare aval,mark(3),gmarknum,gcount,bail,found,frameidx,framedur=0
+#declare frmx, frmy, frmx1, frmy1, cdata_addr
+
 '====
 .main
 '====
   gosub init
-  'gosub bas_logo
-  'gosub xanadu_title
+  gosub bas_logo
+  gosub xanadu_title
   gosub petscii_story
   gosub ender
 
@@ -71,8 +75,8 @@
 #define ENDER=6
 
 ' animations
-#define ANM_PAINT=0
-#define ANM_PONDER=1
+#define ANM_PONDER=0
+#define ANM_PAINT=1
 #define ANM_RIP=2
 
 .init_petscii_frames
@@ -89,9 +93,16 @@
     data_addr = data_addr + 1
     data_addr = data_addr + frmw * frmh * 2
 
+    ':print chr$(147);"frm_idx=";frm_idx
+    'frameidx=frm_idx
+    'gosub draw_petscii_frame
+    'getkey test2$
+
     frm_idx = frm_idx + 1
   loop
   return
+
+#declare animidx, animrepeatcount
 
 '=============
 .petscii_story
@@ -103,8 +114,9 @@
   print chr$(147);
 
   gosub init_petscii_frames
+  gosub init_anims
 
-  #declare tstart, time, action, actanim, actpainting,
+  #declare tstart, time, action, actanim=-1, actpainting
   #declare actstr$, actx, acty, actdur, actreaction
   #declare acttimer
 
@@ -122,7 +134,7 @@
       if action = TXTGREY then read actstr$, actx, acty
       if action = TXTTALK then read actstr$, actdur
       if action = TXTCLEAR then gosub clear_text
-      if action = ANIM then read actanim
+      if action = ANIM then read actanim:animidx=0:animrepeatcount=0
       if action = PAINTING then read actpainting:gosub draw_painting
       if action = REACTION then read actstr$, actreaction, actdur
       if action = ENDER then exit
@@ -133,12 +145,93 @@
 
     if action = TXTGREY then gosub draw_txt_grey
     if action = TXTTALK then gosub draw_txt_talk
-    if action = ANIM then gosub draw_anim
     if action = REACTION then gosub draw_reaction
     gosub poll_play
+    gosub poll_anim
   loop
   
   return
+
+#define MARK1 = -1
+#define MARK2 = -2
+#define MARK3 = -3
+#define REPEAT = -10
+#define INFINITELY = -1
+#define END_ANIM = -999
+#define ALL_ANIMS_FINISHED = -1000
+
+#declare frame_start
+
+.poll_anim
+'---------
+  if actanim = -1 then return
+
+  if framedur > 0 and (ti - frame_start) < framedur then return
+  framedur = 0
+
+  'cursor 0,1:print "poll_anim";
+  'cursor 0,2:print "actanim=";actanim;
+  'cursor 0,3:print "animidx=";animidx;
+  aval = anims(actanim,animidx)
+  animidx = animidx + 1
+
+'print "{x13}                     {x13}animidx=";animidx;
+
+  found = 0
+  if aval = MARK1 then found=1:mark(1)=animidx
+  if aval = MARK2 then found=1:mark(2)=animidx
+  if aval = MARK3 then found=1:mark(3)=animidx
+  if aval = REPEAT then begin
+    found=1
+    ' get mark number (in aval)
+    gmarknum = abs(anims(actanim,animidx))
+    animidx = animidx + 1
+    gcount = anims(actanim,animidx)
+    animidx = animidx + 1
+
+    bail=0
+    if animrepeatcount = 0 then begin
+      if gcount <> -1 then animrepeatcount = gcount
+      animidx = mark(gmarknum)
+      bail=1
+    bend
+      
+    if bail=0 and animrepeatcount > 0 then begin
+      animrepeatcount = animrepeatcount -1
+      if animrepeatcount = 0 then bail=1
+      if bail=0 then animidx=mark(gmarknum)
+      bail=1
+    bend
+
+    'if bail=0 and animrepeatcount = INFINITELY then begin
+    '  animidx=mark(gmarknum)
+    '  bail=1
+    'bend
+  bend
+  if aval = END_ANIM then begin
+    found = 1
+    actanim = -1
+  bend
+
+  'cursor 0,8:print "found = ";found;
+
+  if found = 0 then begin ' we're drawing a petscii frame now?
+
+    frameidx = aval
+
+    'cursor 0,5:print "draw frameidx=";frameidx;
+    'input aval
+
+    gosub draw_petscii_frame
+
+    framedur = anims(actanim,animidx)
+    animidx = animidx + 1
+
+    frame_start = ti
+  bend
+
+  return
+
 
 .clear_text
 '-----------
@@ -159,18 +252,10 @@
 '-------------
   return
 
-.draw_anim
-'---------
-  if acttimer = -1 then return
-  acttimer = -1
-  gosub draw_petscii_frame
-  
-  return
 
 .draw_petscii_frame
 '------------------
-  #declare frmx, frmy, frmx1, frmy1, cdata_addr
-  data_addr = frame_addr(0)
+  data_addr = frame_addr(frameidx)
   frmx = peek(data_addr)
   data_addr = data_addr + 1
   frmy = peek(data_addr)
@@ -205,15 +290,23 @@
 '-------------
   return
 
-#declare anims(3,30) ' anim_idx, anim_data
+#declare rval, aidx, vidx
+#declare test$
 
-#define MARK1 = -1
-#define MARK2 = -2
-#define MARK3 = -3
-#define REPEAT = -10
-#define INFINITELY = -1
-#define END_ANIM = -999
-#define ANIMS_FINISHED = -1000
+.init_anims
+'----------
+  aidx = 0
+  vidx = 0
+  do
+    read rval
+    ' print rval;", ";
+    if rval = ALL_ANIMS_FINISHED then exit
+    anims(aidx,vidx) = rval
+    vidx = vidx + 1
+    if rval = END_ANIM then aidx=aidx+1:vidx=0
+  loop
+  return
+    
 
 #define FRM_STAND = 0
 #define FRM_ARM_UP1 = 1
@@ -262,25 +355,51 @@
 .anims
 '-----
   ' ANM_PONDER
-  data FRM_STAND, .3, {x5F}
-       1, .3,  2, .3,  3, .3 ' raise arm to chin
+  data FRM_STAND,   .3, {x5F}
+       FRM_ARM_UP1, .3, {x5F}
+       FRM_ARM_UP2, .3, {x5F}
+       FRM_ARM_UP3, .3    ' raise arm to chin
   data MARK1
-  data 4, .8,  3, .8,  4, .8,  3, .8 ' scratch chin
-  data 9, 0,    4, .8,  3, .8,  4, .8 ' close eyes & scratch chin
-  data 11, .8 ' normal face
+  data FRM_ARM_UP4, .5, {x5F}
+       FRM_ARM_UP3, .5, {x5F}
+       FRM_ARM_UP4, .5, {x5F}
+       FRM_ARM_UP3, .5    ' scratch chin
+  data FRM_CLOSE_EYES, 0 , {x5F}
+       FRM_ARM_UP4,     .5, {x5F}
+       FRM_ARM_UP3,     .5, {x5F}
+       FRM_ARM_UP4,     .5, {x5F}
+       FRM_ARM_UP3,     .5    ' close eyes & scratch chin
+  data FRM_CLOSE_MOUTH, .2    ' normal face
   data REPEAT, MARK1, INFINITELY
   data END_ANIM
 
   ' ANM_PAINT
-  data 10, 0,  5, 1         ' gaping mouth and finger point up
-  data 11, 1,  6, .5,  7, .5,  8, .5,  12, .5,  13, .5 ' get brush
+  data FRM_OPEN_MOUTH, 0 , {x5F}
+       FRM_ARM_LEFT1, 1     ' gaping mouth and finger point up
+  data FRM_CLOSE_MOUTH, 1, {x5F}
+       FRM_ARM_LEFT2,  .5, {x5F}
+       FRM_ARM_LEFT3,  .5, {x5F}
+       FRM_ARM_LEFT4,  .5, {x5F}
+       FRM_ARM_RIGHT1, .5, {x5F}
+       FRM_ARM_RIGHT2, .5 ' get brush
   data MARK1
-  data 11, 1 ' close mouth
+  data FRM_CLOSE_MOUTH, 1
   data MARK2
-  data 14, 0.3,  15, 0.3
-  data REPEAT, MARK2, 5
-  data 9, 0  
+  data FRM_ARM_RIGHT3, .3, {x5F}
+       FRM_ARM_RIGHT4, .3
+  data REPEAT, MARK2,   5
+  data FRM_CLOSE_EYES,  1
+  data MARK3
+  data FRM_ARM_RIGHT3, .3, {x5F}
+       FRM_ARM_RIGHT4, .3
+  data REPEAT, MARK3,   5
+  data REPEAT, MARK1, INFINITELY
+  data END_ANIM
 
+  ' ANM_RIP
+  data END_ANIM
+
+  data ALL_ANIMS_FINISHED
 
 
 
@@ -295,11 +414,11 @@
   data 1,        TXTTALK,     "hmm... what to draw today...",        3
   data 2,        TXTTALK,     "i know!",                             2
   data 2,        ANIM,        ANM_PAINT
-  data 2,        PAINTING,    1
+  data 5,        PAINTING,    1
   data 2,        REACTION,    "blech!",                       1,     2
-  data 2,        ANIM,        ANM_RIP
-  data 2,        ENDER
-
+  'data 2,        ANIM,        ANM_RIP
+  data 50,        ENDER
+               
 
 
 '=====
