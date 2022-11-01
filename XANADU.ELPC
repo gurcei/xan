@@ -122,7 +122,8 @@
 ' animations
 #define ANM_PONDER=0
 #define ANM_PAINT=1
-#define ANM_RIP=2
+#define ANM_LIFT=2
+#define ANM_RIP=3
 
 .init_petscii_frames
 '-------------------
@@ -401,17 +402,31 @@
        FRM_ARM_RIGHT1, .5, {x5F}
        FRM_ARM_RIGHT2, .5 ' get brush
   data MARK1
-  data FRM_CLOSE_MOUTH, 1
+  data FRM_CLOSE_MOUTH, .5
   data MARK2
-  data FRM_ARM_RIGHT3, .3, {x5F}
-       FRM_ARM_RIGHT4, .3
+  data FRM_ARM_RIGHT3, .1, {x5F}
+       FRM_ARM_RIGHT4, .1
   data REPEAT, MARK2,   5
-  data FRM_CLOSE_EYES,  1
+  data FRM_CLOSE_EYES,  .5
   data MARK3
-  data FRM_ARM_RIGHT3, .3, {x5F}
-       FRM_ARM_RIGHT4, .3
+  data FRM_ARM_RIGHT3, .1, {x5F}
+       FRM_ARM_RIGHT4, .1
   data REPEAT, MARK3,   5
   data REPEAT, MARK1, INFINITELY
+  data END_ANIM
+
+  ' ANM_LIFT
+  data FRM_ARM_RIGHT2, .5, {x5F}
+       FRM_ARM_RIGHT1, .5, {x5F}
+       FRM_RETURN_PAINTBRUSH, .5, {x5F}
+       FRM_ARM_RIGHT5, .5, {x5F}
+       FRM_ARM_RIGHT6, .5, {x5F}
+       FRM_LIFT_PAPER1, .5, {x5F}
+       FRM_LIFT_PAPER2, .5
+  data MARK1
+  data FRM_CRINGE_FACE, .1, {x5F}
+       FRM_CROSS_FACE, .1, {x5F}
+       REPEAT, MARK1, 5
   data END_ANIM
 
   ' ANM_RIP
@@ -422,7 +437,7 @@
 
 
 .story_data
-'----------
+'----------                  
 '      timedelta  action       text                            x   y  dur(sec)
   data 0,        ANIM,        ANM_PONDER
   data 2,        TXTGREY,     "here's sonny...",              4,  0
@@ -431,7 +446,9 @@
   data 3.5,      TXTCLEAR
   data 1,        TXTTALK,     "hmm... what to draw today...",        3
   data 4,        ANIM,        ANM_PAINT
-  data 0,        TXTTALK,     "i know!",                             2
+  data 1.5,      TXTTALK,     "i know!",                             2
+  data 1.5,      TXTCLEAR
+  data 10.5      ANIM,        ANM_LIFT
   data 5,        PAINTING,    1
   data 2,        REACTION,    "blech!",                       1,     2
   'data 2,        ANIM,        ANM_RIP
