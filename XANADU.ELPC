@@ -49,7 +49,7 @@
   #declare frm_idx = 0
   #declare frmw, frmh
 
-#declare anims(3,100) ' anim_idx, anim_data
+#declare anims(4,100) ' anim_idx, anim_data
 #declare aval,mark(3),gmarknum,gcount,bail,found,frameidx,framedur=0
 #declare frmx, frmy, frmx1, frmy1, cdata_addr
 
@@ -183,7 +183,7 @@
       if action = TXTCLEAR then gosub clear_text
       if action = ANIM then read actanim:animidx=0:animrepeatcount=0
       if action = PAINTING then read actpainting:gosub draw_painting
-      if action = REACTION then read actstr$, actreaction, actdur
+      if action = REACTION then read actstr$, actreaction, actdur:gosub init_reaction
       if action = ENDER then exit
 
       tstart = ti
@@ -346,12 +346,33 @@
   next yy
   return
 
+.init_reaction
+'-------------
+  print "{x93}";
+  frameidx = FRM_STAND:gosub draw_petscii_frame
+  frameidx = FRM_LIFT_PAPER2:gosub draw_petscii_frame
+  return
+
+
 .draw_reaction
 '-------------
+  acttimer = acttimer + 1
+  sleep .1
+  if mod(acttimer,2) = 0 then frameidx=FRM_SHOCK_FACE:else frameidx=FRM_HORROR_FACE
+
+  gosub draw_petscii_frame
+  if acttimer > 10 then action = TXTTALK:acttimer = 0
+
   return
 
 .draw_painting
 '-------------
+  print "{x93}";
+  frameidx = FRM_PAPER
+  gosub draw_petscii_frame
+  frameidx = FRM_PAINTING1 + actpainting - 1
+  gosub draw_petscii_frame
+
   return
 
 #declare rval, aidx, vidx
@@ -430,6 +451,19 @@
   data END_ANIM
 
   ' ANM_RIP
+  data FRM_NORM_FACE, .2, {x5F}
+       FRM_RIP1, .2, {x5F}
+       FRM_RIP2, .2, {x5F}
+       FRM_RIP3, .2, {x5F}
+       FRM_RIP4, .2, {x5F}
+       FRM_RIP5, .2, {x5F}
+       FRM_RIP6, .2, {x5F}
+       FRM_RIP7, .2, {x5F}
+       FRM_RIP8, .2, {x5F}
+       FRM_RIP9, .2, {x5F}
+       FRM_RIP10, .2, {x5F}
+       FRM_RIP11, .2
+
   data END_ANIM
 
   data ALL_ANIMS_FINISHED
@@ -448,10 +482,10 @@
   data 4,        ANIM,        ANM_PAINT
   data 1.5,      TXTTALK,     "i know!",                             2
   data 1.5,      TXTCLEAR
-  data 10.5      ANIM,        ANM_LIFT
+  data 7.5,      ANIM,        ANM_LIFT
   data 5,        PAINTING,    1
   data 2,        REACTION,    "blech!",                       1,     2
-  'data 2,        ANIM,        ANM_RIP
+  data .5,       ANIM,        ANM_RIP
   data 50,        ENDER
                
 
