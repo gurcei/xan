@@ -102,8 +102,8 @@
 .main
 '====
   gosub init
-  gosub bas_logo
-  gosub xanadu_title
+  'gosub bas_logo
+  'gosub xanadu_title
   gosub petscii_story
   gosub ender
 
@@ -292,7 +292,7 @@
 .draw_txt_grey
 '-------------
   if acttimer = -1 then return
-  sleep .1
+  sleep .05
   cursor actx + acttimer, acty
   print "{x98}{x4}";mid$(actstr$,1+acttimer,1);
   acttimer = acttimer + 1
@@ -302,7 +302,7 @@
 .draw_txt_talk
 '-------------
   if acttimer = -1 then return
-  sleep .1
+  sleep .05
   actx=(80-len(actstr$))/2+7
   acty=1
 
@@ -421,14 +421,14 @@
   ' ANM_PAINT
   data FRM_OPEN_MOUTH, 0 , {x5F}
        FRM_ARM_LEFT1, 1     ' gaping mouth and finger point up
-  data FRM_CLOSE_MOUTH, 1, {x5F}
-       FRM_ARM_LEFT2,  .5, {x5F}
-       FRM_ARM_LEFT3,  .5, {x5F}
-       FRM_ARM_LEFT4,  .5, {x5F}
-       FRM_ARM_RIGHT1, .5, {x5F}
-       FRM_ARM_RIGHT2, .5 ' get brush
+  data FRM_CLOSE_MOUTH,.2, {x5F}
+       FRM_ARM_LEFT2,  .2, {x5F}
+       FRM_ARM_LEFT3,  .2, {x5F}
+       FRM_ARM_LEFT4,  .2, {x5F}
+       FRM_ARM_RIGHT1, .2, {x5F}
+       FRM_ARM_RIGHT2, .2 ' get brush
   data MARK1
-  data FRM_CLOSE_MOUTH, .5
+  data FRM_CLOSE_MOUTH, .1
   data MARK2
   data FRM_ARM_RIGHT3, .1, {x5F}
        FRM_ARM_RIGHT4, .1
@@ -442,13 +442,13 @@
   data END_ANIM
 
   ' ANM_LIFT
-  data FRM_ARM_RIGHT2, .5, {x5F}
-       FRM_ARM_RIGHT1, .5, {x5F}
+  data FRM_ARM_RIGHT2, .25, {x5F}
+       FRM_ARM_RIGHT1, .25, {x5F}
        FRM_RETURN_PAINTBRUSH, .5, {x5F}
-       FRM_ARM_RIGHT5, .5, {x5F}
-       FRM_ARM_RIGHT6, .5, {x5F}
-       FRM_LIFT_PAPER1, .5, {x5F}
-       FRM_LIFT_PAPER2, .5
+       FRM_ARM_RIGHT5, .25, {x5F}
+       FRM_ARM_RIGHT6, .25, {x5F}
+       FRM_LIFT_PAPER1, .25, {x5F}
+       FRM_LIFT_PAPER2, .25
   data MARK1
   data FRM_CRINGE_FACE, .1, {x5F}
        FRM_CROSS_FACE, .1, {x5F}
@@ -457,17 +457,17 @@
 
   ' ANM_RIP
   data FRM_NORM_FACE, .2, {x5F}
-       FRM_RIP1, .2, {x5F}
-       FRM_RIP2, .2, {x5F}
-       FRM_RIP3, .2, {x5F}
-       FRM_RIP4, .2, {x5F}
-       FRM_RIP5, .2, {x5F}
-       FRM_RIP6, .2, {x5F}
-       FRM_RIP7, .2, {x5F}
-       FRM_RIP8, .2, {x5F}
-       FRM_RIP9, .2, {x5F}
-       FRM_RIP10, .2, {x5F}
-       FRM_RIP11, .2
+       FRM_RIP1, .1, {x5F}
+       FRM_RIP2, .1, {x5F}
+       FRM_RIP3, .1, {x5F}
+       FRM_RIP4, .1, {x5F}
+       FRM_RIP5, .1, {x5F}
+       FRM_RIP6, .1, {x5F}
+       FRM_RIP7, .1, {x5F}
+       FRM_RIP8, .1, {x5F}
+       FRM_RIP9, .1, {x5F}
+       FRM_RIP10, .1, {x5F}
+       FRM_RIP11, .1
 
   data END_ANIM
 
@@ -481,20 +481,20 @@
   ' Sonny: attempt #1
   data 0,        ANIM,        ANM_PONDER
   data 2,        TXTGREY,     "here's sonny...",              4,  0
-  data 3,        TXTGREY,     "a struggling artist...",       22, 0
-  data 3.5,      TXTGREY,     "searching for inspiration...", 47, 0
-  data 3.5,      TXTCLEAR
-  data 1,        TXTTALK,     "hmm... what to draw today...",        3
-  data 4,        ANIM,        ANM_PAINT
+  data 1.5,      TXTGREY,     "a struggling artist...",       22, 0
+  data 1.7,      TXTGREY,     "searching for inspiration...", 47, 0
+  data 2,        TXTCLEAR
+  data .5,       TXTTALK,     "hmm... what to draw today...",        3
+  data 2,        ANIM,        ANM_PAINT
   data 1.5,      TXTTALK,     "i know!",                             2
-  data 1.5,      TXTCLEAR
-  data 7.5,      ANIM,        ANM_LIFT
-  data 5.5,      PAINTING,    1
+  data 1,        TXTCLEAR
+  data 3,        ANIM,        ANM_LIFT
+  data 4,        PAINTING,    1
   data 2,        REACTION,    "blech!",                       1,     2
-  data 2.5,      ANIM,        ANM_RIP
-  data 2.5,      CLS
+  data 2,        ANIM,        ANM_RIP
+  data 1.5,      CLS
   data .,        TXTGREY,     "try again sonny...",           34, 12
-  data 3,      CLS
+  data 2,      CLS
 
   ' Sonny: attempt #2
   data .,        ANIM,        ANM_PONDER
@@ -525,7 +525,7 @@
   data 4.5,      DRAWFRM,     FRM_SAD_FACE
   data 1.5,      CLS
   data .5,       TXTGREY,     "...and with that, sonny's dreams blew away with the wind...", 10, 12
-  data 7,        CLS
+  data 4,        CLS
   data 1,        DRAWFRM,     FRM_MURAL
 
   data 50,        ENDER
@@ -608,7 +608,7 @@
     for pan_y = 0 to 49
       edma 0,pan_len,$41000+pan_y*118+pan_src_idx,$ff80000+pan_y*80+pan_dest_idx
     next pan_y
-    sleep .05
+    sleep .02
     gosub poll_play
   next pan_idx
   return
@@ -642,7 +642,7 @@
     gosub cycle_alt_palette
     gosub poll_play
     gosub anim_draw_subtext
-    sleep .05
+    sleep .02
   next m
   return
 
