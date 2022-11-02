@@ -69,7 +69,7 @@
   740 y=peek(z):z=z+1
   750 w=peek(z):z=z+1:x1=x+w-1
   760 h=peek(z):z=z+1:y1=y+h-1
-  765 print "{home}";cl$;"x=";x;", y=";y;", w=";w;", h=";h;", z=$";hex$(z);"{down}";chr$(27);"j";cl$;"nxt=$";hex$(z+w*h*2);
+  765 print "{home}";cl$;"x=";x;", y=";y;", w=";w;", h=";h;", z=$";hex$(z);"{down}";chr$(27);"j";cl$;"frame=";ff;", nxt=$";hex$(z+w*h*2);
   767 zz=z+w*h:p=$800+x+y*80:pp=$1f800+x+y*80
   770 for yy=y to y1
   780 edma 0, w, z, p
