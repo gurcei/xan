@@ -102,8 +102,8 @@
 .main
 '====
   gosub init
-  'gosub bas_logo
-  'gosub xanadu_title
+  gosub bas_logo
+  gosub xanadu_title
   gosub petscii_story
   gosub ender
 
@@ -498,34 +498,34 @@
 
   ' Sonny: attempt #2
   data .,        ANIM,        ANM_PONDER
-  data 4,        ANIM,        ANM_PAINT
+  data 2,        ANIM,        ANM_PAINT
   data 1.5,      TXTTALK,     "aha!",                             2
-  data 1.5,      TXTCLEAR
-  data 7.5,      ANIM,        ANM_LIFT
-  data 5.5,      PAINTING,    2
+  data 1,        TXTCLEAR
+  data 3,        ANIM,        ANM_LIFT
+  data 4,        PAINTING,    2
   data 2,        REACTION,    "yuck!",                       1,     2
-  data 2.5,       ANIM,        ANM_RIP
-  data 2.5,      CLS
+  data 2,        ANIM,        ANM_RIP
+  data 1.5,      CLS
   data .,        TXTGREY,     "don't give up sonny!",           32, 12
-  data 3,        CLS
+  data 2,        CLS
 
   ' Sonny: attempt #3
   data .,        ANIM,        ANM_PONDER
-  data 4,        ANIM,        ANM_PAINT
+  data 2,        ANIM,        ANM_PAINT
   data 1.5,      TXTTALK,     "i got it!",                             2
-  data 1.5,      TXTCLEAR
-  data 7.5,      ANIM,        ANM_LIFT
-  data 5.5,      PAINTING,    3
+  data 1,        TXTCLEAR
+  data 3,        ANIM,        ANM_LIFT
+  data 4,        PAINTING,    3
   data 2,        REACTION,    "eww!",                       1,     2
-  data 2.5,      ANIM,        ANM_RIP
-  data 2.5,      DRAWFRM,     FRM_SAD_FACE
+  data 2,        ANIM,        ANM_RIP
+  data 1.5,      DRAWFRM,     FRM_SAD_FACE
   data .,        TXTGREY,     "aww... poor sonny...",           32, 0
-  data 3,        TXTCLEAR
-  data .5,      TXTTALK,     "guys like me shouldn't dream anyway...", 4.5
-  data 4.5,      DRAWFRM,     FRM_SAD_FACE
-  data 1.5,      CLS
+  data 2,        TXTCLEAR
+  data .1,       TXTTALK,     "guys like me shouldn't dream anyway...", 3.5
+  data 3.5,      DRAWFRM,     FRM_SAD_FACE
+  data 1,        CLS
   data .5,       TXTGREY,     "...and with that, sonny's dreams blew away with the wind...", 10, 12
-  data 4,        CLS
+  data 3.5,      CLS
   data 1,        DRAWFRM,     FRM_MURAL
 
   data 50,        ENDER
@@ -642,7 +642,7 @@
     gosub cycle_alt_palette
     gosub poll_play
     gosub anim_draw_subtext
-    sleep .02
+    sleep .04
   next m
   return
 
