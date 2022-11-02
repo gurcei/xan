@@ -107,7 +107,9 @@
   gosub petscii_story
   gosub ender
 
-  ' todo: load next part of demo (dancing muses)
+  clr
+  ' todo:perhaps preserve default colour palette vars here
+  dload "bigsprite"
   end
 
 ' action names
@@ -528,8 +530,7 @@
   data 3.5,      CLS
   data 1,        DRAWFRM,     FRM_MURAL
 
-  data 50,        ENDER
-               
+  data 1,       ENDER
 
 
 '=====
