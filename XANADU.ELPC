@@ -102,13 +102,21 @@
 .main
 '====
   gosub init
-  gosub bas_logo
-  gosub xanadu_title
-  gosub petscii_story
+  'gosub bas_logo
+  'gosub xanadu_title
+  'gosub petscii_story
   gosub ender
 
+  ' backup palette to $48000
+  edma 0, $300, $ffd3100, $48000 
+  ' set all colours to black
+  edma 3, $300, 0, $ffd3100 
+
+  frameidx=FRM_MURAL
+  gosub draw_petscii_frame
+
   clr
-  ' todo:perhaps preserve default colour palette vars here
+
   dload "bigsprite"
   end
 
@@ -128,6 +136,7 @@
 #define ANM_PAINT=1
 #define ANM_LIFT=2
 #define ANM_RIP=3
+
 
 .init_petscii_frames
 '-------------------
@@ -528,7 +537,6 @@
   data 1,        CLS
   data .5,       TXTGREY,     "...and with that, sonny's dreams blew away with the wind...", 10, 12
   data 3.5,      CLS
-  data 1,        DRAWFRM,     FRM_MURAL
 
   data 1,       ENDER
 
