@@ -1,6 +1,6 @@
 #output "bigsprite"
 
-' #define FULLSONG=1
+#define FULLSONG=1
 
 '============
 .declarations
@@ -44,6 +44,104 @@
   #declare startcol, endcol
 
   #declare curr_muse = 0
+
+#declare thank_state = 0
+#declare s$,sx,sy
+#declare thank1$(15)
+thank1$(0)="a big thank you to the core mega65 team for all their efforts over the years!"
+thank1$(1)="highlander"
+thank1$(2)="deft"
+thank1$(3)="seriously"
+thank1$(4)="adtbm"
+thank1$(5)="falk/bluewayws"
+thank1$(6)="antti-brain"
+thank1$(7)="doubleflash"
+thank1$(8)="bit shifter"
+thank1$(9)="lgb"
+thank1$(10)="sy2002"
+thank1$(11)="tayger"
+thank1$(12)="lydon"
+thank1$(13)="m3wp"
+thank1$(14)="feralchild"
+thank1$(15)="indiocolifa"
+
+#declare thank2$(15)
+thank2$(0)="extra shout outs to:"
+thank2$(1)="trenz electronics and the moulds team!"
+thank2$(2)="deathy for all your passion for the mega65!"
+thank2$(3)="bit shifter for all the great basic 65 enhancements!"
+thank2$(4)="lydon for all your efforts preparing batch#2!"
+thank2$(5)="sy2002, mjoergen and lydon for all the additional cores!"
+thank2$(6)="dddaaannn for all your documentation, tooling and community-building!"
+thank2$(7)="tayger for mega65connect and the filehost!"
+thank2$(8)="impakt for the determined and thorough manual proof-reading!"
+thank2$(9)="thechief for your efforts supporting the nexys board!"
+thank2$(10)="hojo for the awesome new front covers you made for all our manuals!"
+thank2$(11)="amok for all your documentations efforts!"
+thank2$(12)="ubik for the awesome eleven ide!"
+thank2$(13)="maurice for testing every single basic 65 example in the manual!"
+thank2$(14)="retrocombs, perifractic and rb-jeffrey for your awesome youtube vids!"
+thank2$(15)="mindrail for the macguyver-jtag video!"
+
+#declare thank3$(57)
+thank3$(0)="thanks to all the 1st gen developers that made demos, utilities and games!"
+thank3$(1)="adtbm"
+thank3$(2)="airjuri"
+thank3$(3)="akmafin"
+thank3$(4)="amok"
+thank3$(5)="dddaaannn"
+thank3$(6)="deathy"
+thank3$(7)="deft"
+thank3$(8)="dextrous"
+thank3$(9)="dillof"
+thank3$(10)="dirk"
+thank3$(11)="docster"
+thank3$(12)="egonolsen71"
+thank3$(13)="elch"
+thank3$(14)="endurion"
+thank3$(15)="feralchild"
+thank3$(16)="fredrikr"
+thank3$(17)="geehaf"
+thank3$(18)="geirs"
+thank3$(19)="grim-fandango"
+thank3$(20)="grubi"
+thank3$(21)="hernandp"
+thank3$(22)="hstampfl"
+thank3$(23)="james"
+thank3$(24)="jespergravgaard"
+thank3$(25)="johan"
+thank3$(26)="johnwayner"
+thank3$(27)="kidra"
+thank3$(28)="kithkanan"
+thank3$(29)="kryan1"
+thank3$(30)="lak132"
+thank3$(31)="liquiddream"
+thank3$(32)="lydon"
+thank3$(33)="m3wp"
+thank3$(34)="majikeyric"
+thank3$(35)="maurice"
+thank3$(36)="maxice"
+thank3$(37)="mc64"
+thank3$(38)="mightyaxle"
+thank3$(39)="mr.toast"
+thank3$(40)="mteufel"
+thank3$(41)="n1k0m0"
+thank3$(42)="neoman"
+thank3$(43)="oziphantom"
+thank3$(44)="retrocombs"
+thank3$(45)="shallan50k"
+thank3$(46)="snoopy"
+thank3$(47)="stepz"
+thank3$(48)="stigodump"
+thank3$(49)="sy2002"
+thank3$(50)="tayger"
+thank3$(51)="thechief"
+thank3$(52)="ubik"
+thank3$(53)="urbanl"
+thank3$(54)="waulok"
+thank3$(55)="wombat"
+thank3$(56)="zeha"
+thank3$(57)="zzsila"
 
 #declare muse_state = 0
 #declare next_spr = 1
@@ -264,19 +362,47 @@ greys(0)=15:greys(1)=12:greys(2)=11
 
 .focus_muse
 '----------
-  if muse_state = 0 then gosub init_muse_sprites:muse_state=1:counter = 0:return
+  if muse_state = 0 then begin
+    gosub init_muse_sprites
+    muse_state=1
+    counter = 0
+    print "{x93}";
+    return
+  bend
   if muse_state = 1 then begin
     fadeval=counter
     gosub fade_colours_to_defaults
     if counter=16 then counter=0:muse_state=2
   bend
-  
+
+  if muse_state = 2 then gosub show_thanks
+    
   if muse_state > 0 then begin
     gosub anim_muse_sprites
   bend
   
   counter = counter + 1
 
+  return
+
+.draw_clr_text
+'-------------
+  cursor sx+counter,sy:color mod(counter,16)+16:print mid$(s$,1+counter,1);
+  if counter = len(s$) then counter = -1
+  return
+
+.show_thanks
+'-----------
+  if thank_state = 0 and counter > 20 then thank_state = 1:counter=0
+  if thank_state = 1 then begin
+    s$=thank1$(0):sx=1:sy=1:gosub draw_clr_text
+    if counter = -1 then thank_state = 2
+  bend
+  if thank_state = 2 and counter > 20 then begin
+    thank_state = 3:counter = 0
+  bend
+
+  startcol=16:endcol=31:gosub cycle_colours
   return
 
 .anim_muse_sprites
@@ -288,7 +414,8 @@ greys(0)=15:greys(1)=12:greys(2)=11
       wpoke next_spr*2,$1001+8*(next_frm + 6 * curr_muse)
       wpoke 0,wpeek(next_spr*2)
     bank 128
-    movspr next_spr, 160, 80
+    movspr next_spr, 150, 120
+    movspr 0, 150, 120
     movspr next_spr, spr_angle#1
     spr_angle=mod(spr_angle+10,360)
     sprite next_spr, 1, greys(0)
