@@ -1,5 +1,7 @@
 #output "bigsprite"
 
+' #define FULLSONG=1
+
 '============
 .declarations
 '============
@@ -22,6 +24,8 @@
   #declare grey
 
   #declare tempr, tempg, tempb
+
+  #declare vel=1,dist=0
 
   ' misc
   '-----
@@ -202,17 +206,23 @@
     if counter > 3 then endcol = 31
     gosub fade_colours_to_defaults
     defcolval = defcolval + defcoldir
-    if defcolval = 16 then defcoldir=-1:counter = counter + 1
-    if defcolval = 0 then defcoldir=1
-    if counter = 6 and defcolval = 15 then state=state+1:counter=0
+    if defcolval = 16 then defcoldir=-1
+    if defcolval = 0 then defcoldir=1:counter=counter+1
+    if counter = 6 and defcolval = 15 and defcoldir=-1 then state=state+1:counter=0
   bend
 
   ' colour-cycle muses
   ' ------------------
   if state = 2 then begin
-    startcol = 16:endcol = 31
-    gosub cycle_colours:counter = counter + 1
-    if counter = 16*8 then state = 3
+    dist = dist + vel
+    if dist >= 1 then begin
+      dist = dist - 1
+      counter = counter + 1
+      startcol = 16:endcol = 31
+      gosub cycle_colours
+      if counter > 16*7 then vel=vel*.95
+      if counter = 16*10-1 then state = 3:palette restore
+    bend
   bend
 
   ' highlight current muse
@@ -409,13 +419,13 @@
 .drawolivia
 '----------
   #declare x,y,z,bval,olidx
-  ^^if oi=0 then lo=$46ca0
+  ^^if oi=0 then lo=$460a0
   ^^if oi>0 then lo=$50000+4000*(oi-1)
 
   loc=$46ca0 ' first olivia frame
   ^^edma 0,4000,lo,$ff80000
 
-  ^^if od = 0 then oi = oi + 1:if oi > 16 then od = 1:oi=16
+  ^^if od = 0 then oi = oi + 1:if oi > 8 then od = 1:oi=8
   ^^if od = 1 then oi = oi - 1:if oi < 1 then od = 0
 
   return
@@ -480,121 +490,122 @@
   v5$(2)="t7p0m1o3qcg ddidqdig o2qbbibqbo3ie o2 qggigqgib qaa"
   v6$(2)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr"
 
+#ifdef FULLSONG
   ' *** seems like forever ***
-'  v1$(3)="t7m5o5qp0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f qrr t7m5o5p0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f q.r p0t7i#d p7s#dd#de#fe#fghgr"
-'  v2$(3)="t7p0m1o3qdo2#f qaa io3eceqdiddd o3qdo2#f qaa io3eceqdiddd ee#f#f q.eieeeee"
-'  v3$(3)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
-'  v4$(3)="t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba qrr t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba q.r o4p0t0i#dp9s#dd#de#fe#fghgr"
-'  v5$(3)="t7p0m1o3qad ee igeg q#f i#f#f#f qad ee igeg q#f i#f#f#f ggaa q.b ibbbbb"
-'  v6$(3)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v1$(3)="t7m5o5qp0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f qrr t7m5o5p0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f q.r p0t7i#d p7s#dd#de#fe#fghgr"
+  v2$(3)="t7p0m1o3qdo2#f qaa io3eceqdiddd o3qdo2#f qaa io3eceqdiddd ee#f#f q.eieeeee"
+  v3$(3)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v4$(3)="t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba qrr t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba q.r o4p0t0i#dp9s#dd#de#fe#fghgr"
+  v5$(3)="t7p0m1o3qad ee igeg q#f i#f#f#f qad ee igeg q#f i#f#f#f ggaa q.b ibbbbb"
+  v6$(3)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
 
   ' *** im alive (chorus1) ***
   ' --------------------------
-'  v1$(4)="t7m5o5p0qaa p3h.bp1qaq.air qp0aa p3h.bp1qaq.air"
-'  v2$(4)="t7p0m1o3qddigggggggg dddddddd gggggggg dddd"
-'  v3$(4)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
-'  v4$(4)="t7m5o6p0qddwdqdr ddwdqdr"
-'  v5$(4)="t7p0m1o3qaa o4idddddddd o3iaaaaaaaa o4dddddddd o3iaaaa"
-'  v6$(4)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v1$(4)="t7m5o5p0qaa p3h.bp1qaq.air qp0aa p3h.bp1qaq.air"
+  v2$(4)="t7p0m1o3qddigggggggg dddddddd gggggggg dddd"
+  v3$(4)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v4$(4)="t7m5o6p0qddwdqdr ddwdqdr"
+  v5$(4)="t7p0m1o3qaa o4idddddddd o3iaaaaaaaa o4dddddddd o3iaaaa"
+  v6$(4)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
 
   ' *** i'm aliveclose(chorus2 ending) ***
   ' --------------------------------------
-'  v1$(5)="t7m5o5p0qaa hbiab o6co5hbirsap9gababga w.g"
-'  v2$(5)="t7p0m1o3qdd gg#f#feeddw.c"
-'  v3$(5)="t3o2 ibrbr o1gr gr o2 gr o1 gr gr gr o2 gr o1 gr t0o2p0s#cr o5p1 #cr#cr#cr#cr#cr#cr#cr#cr#cr#cr#cr"
-'  v4$(5)="t7m5o5p0q#f#f hgi#fgahgirs#fp9e#fg#fge#f w.c"
-'  v5$(5)="t7p0m1o3qaa o4ddcco3bbaaw.g"
-'  v6$(5)="t3o2 ibrbr o1gr gr o2 gr o1 gr gr gr o2 gr o1 gr t0o2p0scr o5p1 crcrcrcrcrcrcrcrcrcrcr"
+  v1$(5)="t7m5o5p0qaa hbiab o6co5hbirsap9gababga w.g"
+  v2$(5)="t7p0m1o3qdd gg#f#feeddw.c"
+  v3$(5)="t3o2 ibrbr o1gr gr o2 gr o1 gr gr gr o2 gr o1 gr t0o2p0s#cr o5p1 #cr#cr#cr#cr#cr#cr#cr#cr#cr#cr#cr"
+  v4$(5)="t7m5o5p0q#f#f hgi#fgahgirs#fp9e#fg#fge#f w.c"
+  v5$(5)="t7p0m1o3qaa o4ddcco3bbaaw.g"
+  v6$(5)="t3o2 ibrbr o1gr gr o2 gr o1 gr gr gr o2 gr o1 gr t0o2p0scr o5p1 crcrcrcrcrcrcrcrcrcrcr"
 
   ' *** instrumental ***
   ' --------------------
-'  v1$(6)="t7m5p5o5 qrr r q.g ied o4qb io5deg p0sdo4bo5dedo4bip9g o4ieggeqgie qbo5iddo4bo5qde p9o5r q.giedqesgegeigbo6do5sp0baig"
-'  v1$(6)=v1$(6)+"o5qp9ibp0sgbo6ido5sbo6d sp0g#fdo5b o6#fdo5bg p9ibo6cdo5ib"
-'  v2$(6)="t7p0m1o2qfo3c o2qggigqgio3c o2qeeieqeia o1qaaiaqaio2e qdd  fo3c o2qggigqgio3c o2qeeieqeia o1qaaiaqaio2e qdd"
-'  v3$(6)="p0t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr":v3$(6)=v3$(6)+v3$(6)
-'  v4$(6)="qrrt2p0so6b#f#afae#g#dgd#f#cfceo5bo6#do5#ao6do5ao6#co5#go6co5gb#f#afae#gdo3scrp2t7o6crcrcrcrcrcrcrcrcrcrcrcrcrgrgr"
-'  v4$(6)=v4$(6)+"t6o6p0sdp6o5co3p9co2co5p0sbp6o5co3p9co2co5p0sgp6o5co3p9o1cco5p0sgp6o5co3p9o1cc"
-'  v4$(6)=v4$(6)+"o4p0grp1o2crcrcrcrcrcrcrt0o5p0segegf#gf#g#fa#fagbgbt7o6sgp3o2wc"
-'  v5$(6)="t7p0m1o3qcg ddidqdig o2qbbibqbo3ie qeeieqeig q#f#f  cg ddidqdig o2qbbibqbo3ie qeeieqeig q#f#f"
-'  v6$(6)="p0t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr":v6$(6)=v6$(6)+v6$(6)
+  v1$(6)="t7m5p5o5 qrr r q.g ied o4qb io5deg p0sdo4bo5dedo4bip9g o4ieggeqgie qbo5iddo4bo5qde p9o5r q.giedqesgegeigbo6do5sp0baig"
+  v1$(6)=v1$(6)+"o5qp9ibp0sgbo6ido5sbo6d sp0g#fdo5b o6#fdo5bg p9ibo6cdo5ib"
+  v2$(6)="t7p0m1o2qfo3c o2qggigqgio3c o2qeeieqeia o1qaaiaqaio2e qdd  fo3c o2qggigqgio3c o2qeeieqeia o1qaaiaqaio2e qdd"
+  v3$(6)="p0t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr":v3$(6)=v3$(6)+v3$(6)
+  v4$(6)="qrrt2p0so6b#f#afae#g#dgd#f#cfceo5bo6#do5#ao6do5ao6#co5#go6co5gb#f#afae#gdo3scrp2t7o6crcrcrcrcrcrcrcrcrcrcrcrcrgrgr"
+  v4$(6)=v4$(6)+"t6o6p0sdp6o5co3p9co2co5p0sbp6o5co3p9co2co5p0sgp6o5co3p9o1cco5p0sgp6o5co3p9o1cc"
+  v4$(6)=v4$(6)+"o4p0grp1o2crcrcrcrcrcrcrt0o5p0segegf#gf#g#fa#fagbgbt7o6sgp3o2wc"
+  v5$(6)="t7p0m1o3qcg ddidqdig o2qbbibqbo3ie qeeieqeig q#f#f  cg ddidqdig o2qbbibqbo3ie qeeieqeig q#f#f"
+  v6$(6)="p0t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr":v6$(6)=v6$(6)+v6$(6)
 
   ' *** suddenly came the dawn ***
   ' ------------------------------
-'  v1$(7)="t7m5o5qp0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f qrr t7m5o5p0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f q.r p0t7i#d p7s#dd#de#fe#fghg"
-'  v2$(7)="t7p0m1o3qdo2#f qaa io3eceqdiddd o3qdo2#f qaa io3eceqdiddd ee#f#f q.eieeeee"
-'  v3$(7)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
-'  v4$(7)="t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba qrr t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba q.r o4p0t0i#dp9s#dd#de#fe#fghgr"
-'  v5$(7)="t7p0m1o3qad ee igeg q#f i#f#f#f qad ee igeg q#f i#f#f#f ggaa q.b ibbbbb"
-'  v6$(7)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v1$(7)="t7m5o5qp0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f qrr t7m5o5p0idp5scdicso4bo5c qo4bio5cqc t2p0iep5g#f q.r p0t7i#d p7s#dd#de#fe#fghg"
+  v2$(7)="t7p0m1o3qdo2#f qaa io3eceqdiddd o3qdo2#f qaa io3eceqdiddd ee#f#f q.eieeeee"
+  v3$(7)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v4$(7)="t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba qrr t0m4o4p0idp8scdicso3bo4c qo3bio4cqc o5t2p0igp5ba q.r o4p0t0i#dp9s#dd#de#fe#fghgr"
+  v5$(7)="t7p0m1o3qad ee igeg q#f i#f#f#f qad ee igeg q#f i#f#f#f ggaa q.b ibbbbb"
+  v6$(7)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
 
   ' *** i'm alive! chorus2 ***
   ' -------------------------
-'  v1$(8)="t7m5o5p0qaa p3hb qbbo6h.#c o51qbq.bir qp0bb p3h.o6#cp1o5qbq.bir"
-'  v2$(8)="t7p0m1o3qddhg qee sarararararararar erererererererer arararararararar erererer"
-'  v3$(8)="t3o2 ibrbr brrr brbr o1s grgrgrgrgrgrgrgrgrgrgrgrgrgrgrgr grgrgrgrgrgrgrgrgrgrgrgr"
-'  v4$(8)="t7m5o6p0qdd hd qee ro5ep9o6eid#co5hb p0o6qee ro5ep9o6eid#co5hb"
-'  v5$(8)="t7p0m1o3qaao4hd o3qbb o4serererererererer o3brbrbrbrbrbrbrbr o4erererererererer o3brbrbrbr"
-'  v6$(8)="t3o2 ibrbr brrr brbr o1s grgrgrgrgrgrgrgrgrgrgrgrgrgrgrgr grgrgrgrgrgrgrgrgrgrgrgr"
+  v1$(8)="t7m5o5p0qaa p3hb qbbo6h.#c o51qbq.bir qp0bb p3h.o6#cp1o5qbq.bir"
+  v2$(8)="t7p0m1o3qddhg qee sarararararararar erererererererer arararararararar erererer"
+  v3$(8)="t3o2 ibrbr brrr brbr o1s grgrgrgrgrgrgrgrgrgrgrgrgrgrgrgr grgrgrgrgrgrgrgrgrgrgrgr"
+  v4$(8)="t7m5o6p0qdd hd qee ro5ep9o6eid#co5hb p0o6qee ro5ep9o6eid#co5hb"
+  v5$(8)="t7p0m1o3qaao4hd o3qbb o4serererererererer o3brbrbrbrbrbrbrbr o4erererererererer o3brbrbrbr"
+  v6$(8)="t3o2 ibrbr brrr brbr o1s grgrgrgrgrgrgrgrgrgrgrgrgrgrgrgr grgrgrgrgrgrgrgrgrgrgrgr"
 
   ' *** im alive! verse pitch shift ***
   ' -----------------------------------
-'  v1$(9)="t7m5o5qp0aa arirp7 #f#g qaiaqa#g#f h#f s#fe#f#g#f#g heir"
-'  v2$(9)="t7p0m1o2qgo3d o2qaaiaqaio3d o2q#f#fi#fq#fib qddidqdi#f qee"
-'  v3$(9)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr"
-'  v4$(9)="t7m5o6qp0gp9s#fd#fg qerir t0o6p0#fp8#g qaiaqa#g#f h#f s#fe#f#g#f#g heir"
-'  v5$(9)="t7p0m1o3qda eeieqeia o3q#c#ci#cq#ci#f o2 qaaiaqaio3#c o2qbb"
-'  v6$(9)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr"
+  v1$(9)="t7m5o5qp0aa arirp7 #f#g qaiaqa#g#f h#f s#fe#f#g#f#g heir"
+  v2$(9)="t7p0m1o2qgo3d o2qaaiaqaio3d o2q#f#fi#fq#fib qddidqdi#f qee"
+  v3$(9)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr"
+  v4$(9)="t7m5o6qp0gp9s#fd#fg qerir t0o6p0#fp8#g qaiaqa#g#f h#f s#fe#f#g#f#g heir"
+  v5$(9)="t7p0m1o3qda eeieqeia o3q#c#ci#cq#ci#f o2 qaaiaqaio3#c o2qbb"
+  v6$(9)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr"
 
   ' *** seems like forever ***
-'  v1$(10)="t7m5o5qp0iep5sdeids#co5d q#cio5dqd t2p0i#fp5a#g qrr t7m5o5p0iep5sdeids#cd q#cio5dqd t2p0i#fp5a#g q.r p0t7if p7sfef#f#g#f#gahar"
-'  v2$(10)="t7p0m1o3qeo2#g qbb io3#fd#fqeieee o3qeo2#g qbb io3#fd#fqeieee #f#f#g#g q.#fi#f#f#f#f#f"
-'  v3$(10)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
-'  v4$(10)="t0m4o4p0iep8sdeids#cd q#cio4dqd o5t2p0iap5o6#co5b qrr t0m4o4p0iep8sdeids#cd q#cio4dqd o5t2p0iap5o6#co5b q.r o4p0t0ifp9sfef#f#g#f#gahar"
-'  v5$(10)="t7p0m1o3qbe #f#f ia#fa q#g i#g#g#g qbe #f#f ia#fa q#g i#g#g#g aabb qo4.#c i#c#c#c#c#c"
-'  v6$(10)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v1$(10)="t7m5o5qp0iep5sdeids#co5d q#cio5dqd t2p0i#fp5a#g qrr t7m5o5p0iep5sdeids#cd q#cio5dqd t2p0i#fp5a#g q.r p0t7if p7sfef#f#g#f#gahar"
+  v2$(10)="t7p0m1o3qeo2#g qbb io3#fd#fqeieee o3qeo2#g qbb io3#fd#fqeieee #f#f#g#g q.#fi#f#f#f#f#f"
+  v3$(10)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
+  v4$(10)="t0m4o4p0iep8sdeids#cd q#cio4dqd o5t2p0iap5o6#co5b qrr t0m4o4p0iep8sdeids#cd q#cio4dqd o5t2p0iap5o6#co5b q.r o4p0t0ifp9sfef#f#g#f#gahar"
+  v5$(10)="t7p0m1o3qbe #f#f ia#fa q#g i#g#g#g qbe #f#f ia#fa q#g i#g#g#g aabb qo4.#c i#c#c#c#c#c"
+  v6$(10)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gr o2gr o1gg o2gr o1gg o2gr"
 
   ' *** im alive chorus3 ***
-'  v1$(11)="t7m5o5p0qbb p3ho6#c o5ibo6#cdh#cir o5qbb p3ho6#c o5ibo6#cdh#cir o5qbb ho6#c o5ibo6#cdh#cir sp9o5babo6#co5bo6#co5ab"
-'  v2$(11)="t7p0m1o3qee saeaeaeae #ge#ge#ge#ge #fe#fe#fe#fe ebebebeb saeaeaeae#ge#ge#ge#ge#fe#fe#fe#fe ebebebeb saeaeaeae#ge#ge#ge#ge#fe#fe#fe#fe ebebebeb"
-'  v3$(11)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr"
-'  v4$(11)="t7m5o5p0q#g#g p3ha i#gabhair q#g#gha i#gabhair q#g#gha i#gabhair p9s#g#f#ga#f#ge#f"
-'  v5$(11)="qt6o4ee o5ip0ae#co4a o5be#co4a o6#co5e#co4a o6eo5b#ge o5ip0ae#co4a o5be#co4a o6#co5e#co4a o6eo5b#ge"
-'  v5$(11)=v5$(11)+"o5sp0ae#ceae#ce be#cebe#ce o6#co5e#ceo6#co5e#ce o6eo5b#gbo6eo5b#gb"
-'  v6$(11)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr"
+  v1$(11)="t7m5o5p0qbb p3ho6#c o5ibo6#cdh#cir o5qbb p3ho6#c o5ibo6#cdh#cir o5qbb ho6#c o5ibo6#cdh#cir sp9o5babo6#co5bo6#co5ab"
+  v2$(11)="t7p0m1o3qee saeaeaeae #ge#ge#ge#ge #fe#fe#fe#fe ebebebeb saeaeaeae#ge#ge#ge#ge#fe#fe#fe#fe ebebebeb saeaeaeae#ge#ge#ge#ge#fe#fe#fe#fe ebebebeb"
+  v3$(11)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr"
+  v4$(11)="t7m5o5p0q#g#g p3ha i#gabhair q#g#gha i#gabhair q#g#gha i#gabhair p9s#g#f#ga#f#ge#f"
+  v5$(11)="qt6o4ee o5ip0ae#co4a o5be#co4a o6#co5e#co4a o6eo5b#ge o5ip0ae#co4a o5be#co4a o6#co5e#co4a o6eo5b#ge"
+  v5$(11)=v5$(11)+"o5sp0ae#ceae#ce be#cebe#ce o6#co5e#ceo6#co5e#ce o6eo5b#gbo6eo5b#gb"
+  v6$(11)="t3o2 ibrbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr brbr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr"
 
   ' *** final interlude intro ***
-'  v1$(12)="t8m5o5p0 h.#firs#f#f q.gsggigsrigsrig":v1$(12)=v1$(12)+v1$(12)+v1$(12):v1$(12)=v1$(12)+"h.#firs#f#f q.gsggifsrifsrif"
-'  v2$(12)="t8o3h.dirsdd q.dsddo2iasriasria o3h.dirsdd q.dsddidsridsrid h.dirsdd q.dsddo2iasriasria h.dirsdd q.dsdd o2i#gsri#gsri#g"
-'  v3$(12)="t3o2 qbrrirsbb q.bsbbidsridsrid qbrrirsbb q.bsbbidsridsrid o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr idsridsrid"
-'  v4$(12)="m0p0t7o1h.dirsdd q.dsddidsridsrid":v4$(12)=v4$(12)+v4$(12)+v4$(12):v4$(12)=v4$(12)+"h.dirsdd q.dsdd i#gsri#gsri#g"
-'  v5$(12)="t8o3h.airsaa q.asaaidsridsrid h.airsaa q.asaaiasriasria h.airsaa q.asaaidsridsrid h.airsaa q.asaa i#csri#csri#c"
-'  v6$(12)="t3o2 qbrrirsbb q.bsbbidsridsrid qbrrirsbb q.bsbbidsridsrid o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr idsridsrid"
+  v1$(12)="t8m5o5p0 h.#firs#f#f q.gsggigsrigsrig":v1$(12)=v1$(12)+v1$(12)+v1$(12):v1$(12)=v1$(12)+"h.#firs#f#f q.gsggifsrifsrif"
+  v2$(12)="t8o3h.dirsdd q.dsddo2iasriasria o3h.dirsdd q.dsddidsridsrid h.dirsdd q.dsddo2iasriasria h.dirsdd q.dsdd o2i#gsri#gsri#g"
+  v3$(12)="t3o2 qbrrirsbb q.bsbbidsridsrid qbrrirsbb q.bsbbidsridsrid o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr idsridsrid"
+  v4$(12)="m0p0t7o1h.dirsdd q.dsddidsridsrid":v4$(12)=v4$(12)+v4$(12)+v4$(12):v4$(12)=v4$(12)+"h.dirsdd q.dsdd i#gsri#gsri#g"
+  v5$(12)="t8o3h.airsaa q.asaaidsridsrid h.airsaa q.asaaiasriasria h.airsaa q.asaaidsridsrid h.airsaa q.asaa i#csri#csri#c"
+  v6$(12)="t3o2 qbrrirsbb q.bsbbidsridsrid qbrrirsbb q.bsbbidsridsrid o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr idsridsrid"
 
   ' *** final interlude 1 ***
-'  v1$(13)="o5t8w.e qo6idp5sri#csr o5ib h.a irb wb we o6h#c o5a wg r"
-'  v2$(13)="t6o2 iaaaaaaaa aaaaaaaa eeeeeeee eeee t8qgb t6iaaaaaaaa aaaaaaaa eeeeeeee eeee t8qgb"
-'  v3$(13)="t3o2i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr brbr":v3$(13)=v3$(13)+v3$(13)
-'  v4$(13)="o4t8w.e qo5idp5sri#csr o4ib h.a irb wb we o5h#c o4a wg r"
-'  v5$(13)="t6o3 ieeeeeeee eeeeeeee o2bbbbbbbb bbbbo3 t8qd#f t6io3eeeeeeee eeeeeeee o2bbbbbbbb bbbbo3 t8qd#f"
-'  v6$(13)="t3o2i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr brbr":v6$(13)=v6$(13)+v6$(13)
+  v1$(13)="o5t8w.e qo6idp5sri#csr o5ib h.a irb wb we o6h#c o5a wg r"
+  v2$(13)="t6o2 iaaaaaaaa aaaaaaaa eeeeeeee eeee t8qgb t6iaaaaaaaa aaaaaaaa eeeeeeee eeee t8qgb"
+  v3$(13)="t3o2i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr brbr":v3$(13)=v3$(13)+v3$(13)
+  v4$(13)="o4t8w.e qo5idp5sri#csr o4ib h.a irb wb we o5h#c o4a wg r"
+  v5$(13)="t6o3 ieeeeeeee eeeeeeee o2bbbbbbbb bbbbo3 t8qd#f t6io3eeeeeeee eeeeeeee o2bbbbbbbb bbbbo3 t8qd#f"
+  v6$(13)="t3o2i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr brbr":v6$(13)=v6$(13)+v6$(13)
 
   ' *** final interlude 2 ***
-'  v1$(14)="o6t8w.#c q#cio5bo6#c hd iref heir"
-'  v2$(14)="t7m0o2 sarararararararar arararararararar #ar#ar#ar#ar#ar#ar#ar#ar t8q.eieqee"
-'  v3$(14)="t3i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr brr bbrbr"
-'  v4$(14)="o5t8w.#c q#cio4bo5#c hd iref heir"
-'  v5$(14)="t7m0p0o3 serererererererer erererererererer frfrfrfrfrfrfrfr t8o2 q.bibqbb"
-'  v6$(14)="t3i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr brr bbrbr"
+  v1$(14)="o6t8w.#c q#cio5bo6#c hd iref heir"
+  v2$(14)="t7m0o2 sarararararararar arararararararar #ar#ar#ar#ar#ar#ar#ar#ar t8q.eieqee"
+  v3$(14)="t3i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr brr bbrbr"
+  v4$(14)="o5t8w.#c q#cio4bo5#c hd iref heir"
+  v5$(14)="t7m0p0o3 serererererererer erererererererer frfrfrfrfrfrfrfr t8o2 q.bibqbb"
+  v6$(14)="t3i o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr o1gr o2gr o1gg o2gr brr bbrbr"
 
   ' *** final im alive chorus ***
-'  v1$(15)="t7m5o5p0 qbb p3o6h.#c o5qbq.bir qp0bb p3h.o6#cp1o5qbq.bir qp0bb p3h.o6#cp1o5qbq.bir qp0bb t1o6hc"
-'  v2$(15)="so2ao3ao2ao3ao2ao3ao2ao3a o2ao3ao2ao3ao2ao3ao2ao3a o2q.e ieqee":v2$(15)="t7p0m1o2qee"+v2$(15)+v2$(15)+v2$(15)+"p1t1hf"
-'  v3$(15)="t3i o2brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1hg"
-'  v4$(15)="p0t7o5q#g#g p2h.a q#gq.#gir q#g#g h.a q#gq.#gir q#g#g h.a q#gq.#gir q#g#g t1 p1sfho2f"
-'  v5$(15)="qt6o4ee o5ip0ae#co4a o5ip0ae#co4a o5b#geo4b o5b#geo4b o5ip0ae#co4a o5ip0ae#co4a o5b#geo4b o5b#geo4b"
-'  v5$(15)=v5$(15)+"o5sp0ae#ceae#ce ae#ceae#ce b#ge#gb#ge#g b#ge#gb#ge#g o5t1sep1o2he"
-'  v6$(15)="t3i o2brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1hg"
-
+  v1$(15)="t7m5o5p0 qbb p3o6h.#c o5qbq.bir qp0bb p3h.o6#cp1o5qbq.bir qp0bb p3h.o6#cp1o5qbq.bir qp0bb t1o6hc"
+  v2$(15)="so2ao3ao2ao3ao2ao3ao2ao3a o2ao3ao2ao3ao2ao3ao2ao3a o2q.e ieqee":v2$(15)="t7p0m1o2qee"+v2$(15)+v2$(15)+v2$(15)+"p1t1hf"
+  v3$(15)="t3i o2brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1hg"
+  v4$(15)="p0t7o5q#g#g p2h.a q#gq.#gir q#g#g h.a q#gq.#gir q#g#g h.a q#gq.#gir q#g#g t1 p1sfho2f"
+  v5$(15)="qt6o4ee o5ip0ae#co4a o5ip0ae#co4a o5b#geo4b o5b#geo4b o5ip0ae#co4a o5ip0ae#co4a o5b#geo4b o5b#geo4b"
+  v5$(15)=v5$(15)+"o5sp0ae#ceae#ce ae#ceae#ce b#ge#gb#ge#g b#ge#gb#ge#g o5t1sep1o2he"
+  v6$(15)="t3i o2brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1gr o2gr o1gg o2gr brrb brbr o1hg"
+#endif
   return
 
 '---------
