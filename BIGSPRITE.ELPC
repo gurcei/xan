@@ -46,6 +46,7 @@
   #declare curr_muse = 0
 
 #declare thank_state = 0
+#declare thank_idx = 0
 #declare s$,sx,sy
 #declare thank1$(15)
 thank1$(0)="a big thank you to the core mega65 team for all their efforts over the years!"
@@ -187,6 +188,7 @@ greys(0)=15:greys(1)=12:greys(2)=11
 
 .init_default_colours
 '--------------------
+#declare debug_flag = 0
   if peek($d020)<>0 and peek($d020)<>2 then begin
     border 0
     poke $d018, peek($d018) and $fd
@@ -194,6 +196,7 @@ greys(0)=15:greys(1)=12:greys(2)=11
     edma 3, $300, 0, $ffd3100
     ^^bload "mural.bin",p($800),r
     ^^bload "mural.clr",p($1f800),r
+    debug_flag = 1
   bend
 
   for k = 0 to 31
@@ -201,6 +204,12 @@ greys(0)=15:greys(1)=12:greys(2)=11
     default_green(k) = peek($48100+k)
     default_blue(k) = peek($48200+k)
   next k
+
+  if debug_flag=1 then begin
+    ^^bload "mural.bin",p($48000),r
+    ^^bload "mural.clr",p($49000),r
+  bend
+
   return
 
 .fade_colours_to_grey
@@ -293,7 +302,7 @@ greys(0)=15:greys(1)=12:greys(2)=11
 .p1_loop
 '-------
   ' drop paper sprites down
-  if state < 4 then begin
+  if state < 4 and muse_state=0 then begin
     for k = 0 to 7
       if int(rnd(1)*3) = 0 then begin
         sprite_frame_idx(k) = mod(sprite_frame_idx(k)+1,13)
@@ -376,8 +385,35 @@ greys(0)=15:greys(1)=12:greys(2)=11
   bend
 
   if muse_state = 2 then gosub show_thanks
-    
-  if muse_state > 0 then begin
+
+  if muse_state = 3 then begin
+    fadeval=counter
+    'print "{x13}";chr$(27);"q";fadeval;:getkey s$
+    gosub fade_colours_to_black
+    if counter = 16 then counter=0:muse_state = 4
+  bend
+
+  if muse_state = 4 then begin
+    'print "{x13}";chr$(27);"q muse_state=4";fadeval;:getkey s$
+    for k = 0 to 7:sprite k,0:next k
+    bank 128
+    gosub restore_screen
+    curr_muse = curr_muse + 1
+    muse_state = 5
+    counter = 0
+  bend
+
+  if muse_state = 5 then begin
+    fadeval=counter
+    startcol=0:endcol=31:gosub fade_colours_to_defaults
+    if counter=16 then begin
+      muse_state = 6
+      counter = 0
+      state = 2
+    bend
+  bend
+
+  if muse_state > 0 and state=4 then begin
     gosub anim_muse_sprites
   bend
   
@@ -395,14 +431,37 @@ greys(0)=15:greys(1)=12:greys(2)=11
 '-----------
   if thank_state = 0 and counter > 20 then thank_state = 1:counter=0
   if thank_state = 1 then begin
-    s$=thank1$(0):sx=1:sy=1:gosub draw_clr_text
-    if counter = -1 then thank_state = 2
+    s$=thank1$(0):sx=1:sy=0:gosub draw_clr_text
+    if counter = -1 then thank_state = 2:thank_idx=1
   bend
+  ' pause
   if thank_state = 2 and counter > 20 then begin
     thank_state = 3:counter = 0
   bend
+  ' draw next name
+  if thank_state = 3 then begin
+    if thank_idx < 16 then begin
+      s$=thank1$(thank_idx)
+      if mod(thank_idx,2) = 1 then sx=10-len(s$)/2:else sx=70-len(s$)/2
+      sy = int((thank_idx-1) / 2)*3 + 3
+      gosub draw_clr_text
+    bend
+    if counter = -1 or thank_idx=16 then begin
+      thank_idx = thank_idx + 1
+      if thank_idx > 16 then begin
+        thank_state = 4
+        muse_state=3
+        counter=0
+        palette restore
+        gosub store_curr_colours
+      bend:else thank_state = 2
+    bend
+  bend
 
-  startcol=16:endcol=31:gosub cycle_colours
+  if thank_state<>4 then begin
+    startcol=16:endcol=31:gosub cycle_colours
+  bend
+
   return
 
 .anim_muse_sprites
@@ -452,13 +511,13 @@ greys(0)=15:greys(1)=12:greys(2)=11
 
 
 .save_screen
-  edma 0, $7d0, $800, $48000
-  edma 0, $7d0, $1f800, $49000
+  ^^edma 0, $7d0, $800, $48000
+  ^^edma 0, $7d0, $1f800, $49000
   return
 
 .restore_screen
-  edma 0, $7d0, $48000, $800
-  edma 0, $7d0, $49000, $1f800
+  ^^edma 0, $7d0, $48000, $800
+  ^^edma 0, $7d0, $49000, $1f800
   return
 
 .fade_out
