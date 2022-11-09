@@ -38,10 +38,21 @@
   #declare sprite_x(8)
   #declare sprite_y(8)
 
-  #declare state = 0
+  #declare state = 4
   #declare counter = 0
   #declare defcolval = 0, defcoldir=1, altcolval = 0, altcoldir=1
   #declare startcol, endcol
+
+  #declare curr_muse = 0
+
+#declare muse_state = 0
+#declare next_spr = 1
+#declare next_frm = 0
+#declare next_cnt = 0
+#declare spr_active(8)
+#declare spr_angle = 0
+#declare greys(3)
+greys(0)=15:greys(1)=12:greys(2)=11
 
   #declare SPRX64EN = $d057
   #declare SPRHGTEN = $d055
@@ -117,6 +128,17 @@
   next k
   return
 
+.fade_colours_to_black
+'---------------------
+  'INPUT: fadeval=0 to 16
+  tempval = (16-fadeval) / 16
+  for k = startcol to endcol
+    poke $d100+k, curr_red(k) * tempval
+    poke $d200+k, curr_green(k) * tempval
+    poke $d300+k, curr_blue(k) * tempval
+  next k
+  return
+
 '==============
 .p1_drop_papers
 '==============
@@ -153,6 +175,7 @@
     sprite_x(k) = 30+40*k
     sprite_y(k) = int(rnd(1)*5)*5
     sprite k, 1, 15
+    movspr k, 0#0
     movspr k, sprite_x(k), sprite_y(k)
     wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
   next k
@@ -172,17 +195,19 @@
 .p1_loop
 '-------
   ' drop paper sprites down
-  for k = 0 to 7
-    if int(rnd(1)*3) = 0 then begin
-      sprite_frame_idx(k) = mod(sprite_frame_idx(k)+1,13)
-    bend
-    if sprite_y(k) < 247 then begin
-      sprite_y(k) = sprite_y(k) + int(rnd(1)*3)
-      sprite_x(k) = sprite_x(k) + int(rnd(1)*5)-2
-      movspr k, sprite_x(k), sprite_y(k)
-      wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
-    bend
-  next k
+  if state < 4 then begin
+    for k = 0 to 7
+      if int(rnd(1)*3) = 0 then begin
+        sprite_frame_idx(k) = mod(sprite_frame_idx(k)+1,13)
+      bend
+      if sprite_y(k) < 247 then begin
+        sprite_y(k) = sprite_y(k) + int(rnd(1)*3)
+        sprite_x(k) = sprite_x(k) + int(rnd(1)*5)-2
+        movspr k, sprite_x(k), sprite_y(k)
+        wpoke ($40000+k*2), $11f1 + sprite_frame_idx(k)
+      bend
+    next k
+  bend
 
   gosub poll_play
   sleep .025
@@ -221,20 +246,130 @@
       startcol = 16:endcol = 31
       gosub cycle_colours
       if counter > 16*7 then vel=vel*.95
-      if counter = 16*10-1 then state = 3:palette restore
+      if counter = 16*10-1 then state = 3:palette restore:counter=0:defcolval=0:defcoldir=2
     bend
   bend
 
-  ' highlight current muse
-  ' ----------------------
-  if state = 3 then begin
-    
-  bend
+  if state = 3 then gosub highlight_curr_muse
+
+  if state = 4 then gosub fade_out
+
+  if state = 5 then gosub fade_out
+
+  if state = 6 then gosub focus_muse
 
   get a$:if a$="" then goto p1_loop
 
   return
 
+.focus_muse
+'----------
+  if muse_state = 0 then gosub init_muse_sprites:muse_state=1:counter = 0:return
+  if muse_state = 1 then begin
+    fadeval=counter
+    gosub fade_colours_to_defaults
+    if counter=16 then counter=0:muse_state=2
+  bend
+  
+  if muse_state > 0 then begin
+    gosub anim_muse_sprites
+  bend
+  
+  counter = counter + 1
+
+  return
+
+.anim_muse_sprites
+'-----------------
+  next_cnt = next_cnt + 1
+  if next_cnt = 5 then begin
+    next_cnt = 0
+    bank 4
+      wpoke next_spr*2,$1001+8*(next_frm + 6 * curr_muse)
+      wpoke 0,wpeek(next_spr*2)
+    bank 128
+    movspr next_spr, 160, 80
+    movspr next_spr, spr_angle#1
+    spr_angle=mod(spr_angle+10,360)
+    sprite next_spr, 1, greys(0)
+    sprite 0, 1, 1
+    spr_active(next_spr) = 1
+    next_spr = mod(next_spr+5, 7)+1
+    next_frm = mod(next_frm+1, 6)
+  bend
+
+  for k = 1 to 7
+    if spr_active(k)>0 then begin
+      spr_active(k)=spr_active(k)+1
+      fadeval=spr_active(k)/10
+      if fadeval < 3 then begin
+        sprite k, 1, greys(fadeval)
+      bend:else sprite k, 0:spr_active(k)=0
+    bend
+  next k
+  return
+
+.init_muse_sprites
+'-----------------
+  ' turn of all sprites
+  for k = 0 to 7
+    sprite k, 0
+    movspr k, 160, 80
+  next k
+  poke SPRX64EN, 255
+  poke SPRHGTEN, 255
+  poke SPRHGT, 64
+  poke SPRPTRBNK, 4+128
+  wpoke SPRPTRADR, 0
+  return
+
+
+.save_screen
+  edma 0, $7d0, $800, $48000
+  edma 0, $7d0, $1f800, $49000
+  return
+
+.restore_screen
+  edma 0, $7d0, $48000, $800
+  edma 0, $7d0, $49000, $1f800
+  return
+
+.fade_out
+'--------
+  fadeval = counter
+  gosub fade_colours_to_black
+  counter = counter + 1
+  if counter > 16 then state = state + 1:startcol=0:endcol=31:counter=0:gosub store_curr_colours:muse_state=0
+  return
+
+.highlight_curr_muse
+'-------------------
+    fadeval = defcolval
+    startcol = 16+curr_muse:endcol = 16+curr_muse
+    gosub fade_colours_to_white
+    defcolval = defcolval + defcoldir
+    if defcolval = 16 then defcoldir=-2
+    if defcolval = 0 then defcoldir=2:counter=counter+1
+    if counter = 6 and defcolval = 14 and defcoldir=-2 then begin
+      state=state+1
+      counter=0
+      palette restore
+      fadeval=0
+      gosub save_screen
+    bend
+    return
+
+.fade_colours_to_white
+'---------------------
+  'INPUT: fadeval=0 to 16
+  tempval = fadeval / 16
+  for k = startcol to endcol
+    poke $d100+k, default_red(k) + (15 - default_red(k)) * tempval
+    poke $d200+k, default_green(k) + (15 - default_green(k)) * tempval
+    poke $d300+k, default_blue(k) + (15 - default_blue(k)) * tempval
+  next k
+  return
+  
 
 .cycle_colours
 '-------------
