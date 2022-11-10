@@ -66,10 +66,10 @@ thank1$(13)="m3wp"
 thank1$(14)="feralchild"
 thank1$(15)="indiocolifa"
 
-#declare thank2$(15)
+#declare thank2$(16)
 thank2$(0)="extra shout outs to:"
 thank2$(1)="trenz electronics and the moulds team!"
-thank2$(2)="deathy for all your passion for the mega65!"
+thank2$(2)="deathy for all your passion and dedication to the mega65!"
 thank2$(3)="bit shifter for all the great basic 65 enhancements!"
 thank2$(4)="lydon for all your efforts preparing batch#2!"
 thank2$(5)="sy2002, mjoergen and lydon for all the additional cores!"
@@ -78,11 +78,12 @@ thank2$(7)="tayger for mega65connect and the filehost!"
 thank2$(8)="impakt for the determined and thorough manual proof-reading!"
 thank2$(9)="thechief for your efforts supporting the nexys board!"
 thank2$(10)="hojo for the awesome new front covers you made for all our manuals!"
-thank2$(11)="amok for all your documentations efforts!"
+thank2$(11)="amok for all your documentation efforts!"
 thank2$(12)="ubik for the awesome eleven ide!"
 thank2$(13)="maurice for testing every single basic 65 example in the manual!"
 thank2$(14)="retrocombs, perifractic and rb-jeffrey for your awesome youtube vids!"
 thank2$(15)="mindrail for the macguyver-jtag video!"
+thank2$(16)="deft and adtbm for all your 'hello mega65 community' videos!"
 
 #declare thank3$(57)
 thank3$(0)="thanks to all the 1st gen developers that made demos, utilities and games!"
@@ -152,6 +153,19 @@ thank3$(57)="zzsila"
 #declare spr_angle = 0
 #declare greys(3)
 greys(0)=15:greys(1)=12:greys(2)=11
+
+#declare muse_clr(9)
+muse_clr(0)=16
+muse_clr(1)=18
+muse_clr(2)=20
+muse_clr(3)=22
+muse_clr(4)=25
+muse_clr(5)=26
+muse_clr(6)=28
+muse_clr(7)=30
+muse_clr(8)=31
+
+#declare thank_start_idx
 
   #declare SPRX64EN = $d057
   #declare SPRHGTEN = $d055
@@ -352,8 +366,8 @@ greys(0)=15:greys(1)=12:greys(2)=11
       counter = counter + 1
       startcol = 16:endcol = 31
       gosub cycle_colours
-      if counter > 16*7 then vel=vel*.95
-      if counter = 16*10-1 then state = 3:palette restore:counter=0:defcolval=0:defcoldir=2
+      if counter > 16*4 then vel=vel*.93
+      if counter = 16*6-1 then state = 3:palette restore:counter=0:defcolval=0:defcoldir=2
     bend
   bend
 
@@ -389,7 +403,7 @@ greys(0)=15:greys(1)=12:greys(2)=11
   if muse_state = 3 then begin
     fadeval=counter
     'print "{x13}";chr$(27);"q";fadeval;:getkey s$
-    gosub fade_colours_to_black
+    startcol=0:endcol=31:gosub fade_colours_to_black
     if counter = 16 then counter=0:muse_state = 4
   bend
 
@@ -409,11 +423,11 @@ greys(0)=15:greys(1)=12:greys(2)=11
     if counter=16 then begin
       muse_state = 6
       counter = 0
-      state = 2
+      state = 2:dist = 0:vel = 1
     bend
   bend
 
-  if muse_state > 0 and state=4 then begin
+  if muse_state > 0 and muse_state < 4 and state=6 then begin
     gosub anim_muse_sprites
   bend
   
@@ -435,7 +449,7 @@ greys(0)=15:greys(1)=12:greys(2)=11
     if counter = -1 then thank_state = 2:thank_idx=1
   bend
   ' pause
-  if thank_state = 2 and counter > 20 then begin
+  if thank_state = 2 and counter > 10 then begin
     thank_state = 3:counter = 0
   bend
   ' draw next name
@@ -458,11 +472,51 @@ greys(0)=15:greys(1)=12:greys(2)=11
     bend
   bend
 
-  if thank_state<>4 then begin
+  ' 2nd page of thanks
+  if curr_muse >= 1 and curr_muse <=4 then gosub thanks_2
+
+  if thank_state<>4 and thank_state<>8 then begin
     startcol=16:endcol=31:gosub cycle_colours
   bend
 
   return
+
+.thanks_2
+'--------
+  if thank_state = 4 and counter > 20 then thank_state = 5:counter=0
+  if thank_state = 5 then begin
+    s$=thank2$(0):sx=40-len(s$)/2:sy=0:gosub draw_clr_text
+    if counter = -1 then thank_state = 6:thank_start_idx=1+(curr_muse-1)*4:thank_idx=thank_start_idx
+  bend
+  ' pause
+  if thank_state = 6 and counter > 10 then begin
+    thank_state = 7:counter = 0
+  bend
+
+#define MAX_SHOUTS_PER_PAGE = 4
+  ' draw next shout out
+  if thank_state = 7 then begin
+    if thank_idx-thank_start_idx < MAX_SHOUTS_PER_PAGE then begin
+      s$=thank2$(thank_idx)
+      sx=40-len(s$)/2
+      sy=(thank_idx - thank_start_idx) * 3 + 3
+      if sy > 6 then sy = sy + 11
+      gosub draw_clr_text
+    bend
+    if counter = -1 or thank_idx-thank_start_idx=MAX_SHOUTS_PER_PAGE then begin
+      thank_idx = thank_idx + 1
+      if thank_idx - thank_start_idx >= MAX_SHOUTS_PER_PAGE+1 then begin
+        thank_state = 4
+        muse_state=3
+        counter=0
+        palette restore
+        gosub store_curr_colours
+      bend:else thank_state = 6
+    bend
+  bend
+
+  return
+
 
 .anim_muse_sprites
 '-----------------
@@ -531,12 +585,13 @@ greys(0)=15:greys(1)=12:greys(2)=11
 .highlight_curr_muse
 '-------------------
     fadeval = defcolval
-    startcol = 16+curr_muse:endcol = 16+curr_muse
+    k = muse_clr(curr_muse)
+    startcol = k:endcol = k
     gosub fade_colours_to_white
     defcolval = defcolval + defcoldir
     if defcolval = 16 then defcoldir=-2
     if defcolval = 0 then defcoldir=2:counter=counter+1
-    if counter = 6 and defcolval = 14 and defcoldir=-2 then begin
+    if counter = 3 and defcolval = 14 and defcoldir=-2 then begin
       state=state+1
       counter=0
       palette restore
