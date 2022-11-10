@@ -38,7 +38,7 @@
   #declare sprite_x(8)
   #declare sprite_y(8)
 
-  #declare state = 4
+  #declare state = 0
   #declare counter = 0
   #declare defcolval = 0, defcoldir=1, altcolval = 0, altcoldir=1
   #declare startcol, endcol
@@ -74,7 +74,7 @@ thank2$(3)="bit shifter for all the great basic 65 enhancements!"
 thank2$(4)="lydon for all your efforts preparing batch#2!"
 thank2$(5)="sy2002, mjoergen and lydon for all the additional cores!"
 thank2$(6)="dddaaannn for all your documentation, tooling and community-building!"
-thank2$(7)="tayger for mega65connect and the filehost!"
+thank2$(7)="tayger for mega65connect and the 'files.mega65.org' filehost!"
 thank2$(8)="impakt for the determined and thorough manual proof-reading!"
 thank2$(9)="thechief for your efforts supporting the nexys board!"
 thank2$(10)="hojo for the awesome new front covers you made for all our manuals!"
@@ -85,7 +85,7 @@ thank2$(14)="retrocombs, perifractic and rb-jeffrey for your awesome youtube vid
 thank2$(15)="mindrail for the macguyver-jtag video!"
 thank2$(16)="deft and adtbm for all your 'hello mega65 community' videos!"
 
-#declare thank3$(57)
+#declare thank3$(60)
 thank3$(0)="thanks to all the 1st gen developers that made demos, utilities and games!"
 thank3$(1)="adtbm"
 thank3$(2)="airjuri"
@@ -107,43 +107,46 @@ thank3$(17)="geehaf"
 thank3$(18)="geirs"
 thank3$(19)="grim-fandango"
 thank3$(20)="grubi"
-thank3$(21)="hernandp"
-thank3$(22)="hstampfl"
-thank3$(23)="james"
-thank3$(24)="jespergravgaard"
-thank3$(25)="johan"
-thank3$(26)="johnwayner"
-thank3$(27)="kidra"
-thank3$(28)="kithkanan"
-thank3$(29)="kryan1"
-thank3$(30)="lak132"
-thank3$(31)="liquiddream"
-thank3$(32)="lydon"
-thank3$(33)="m3wp"
-thank3$(34)="majikeyric"
-thank3$(35)="maurice"
-thank3$(36)="maxice"
-thank3$(37)="mc64"
-thank3$(38)="mightyaxle"
-thank3$(39)="mr.toast"
-thank3$(40)="mteufel"
-thank3$(41)="n1k0m0"
-thank3$(42)="neoman"
-thank3$(43)="oziphantom"
-thank3$(44)="retrocombs"
-thank3$(45)="shallan50k"
-thank3$(46)="snoopy"
-thank3$(47)="stepz"
-thank3$(48)="stigodump"
-thank3$(49)="sy2002"
-thank3$(50)="tayger"
-thank3$(51)="thechief"
-thank3$(52)="ubik"
-thank3$(53)="urbanl"
-thank3$(54)="waulok"
-thank3$(55)="wombat"
-thank3$(56)="zeha"
-thank3$(57)="zzsila"
+thank3$(21)="heath-man"
+thank3$(22)="hernandp"
+thank3$(23)="hstampfl"
+thank3$(24)="james"
+thank3$(25)="jespergravgaard"
+thank3$(26)="johan"
+thank3$(27)="johnwayner"
+thank3$(28)="kidra"
+thank3$(29)="kithkanan"
+thank3$(30)="kryan1"
+thank3$(31)="lak132"
+thank3$(32)="liquiddream"
+thank3$(33)="lydon"
+thank3$(34)="m3wp"
+thank3$(35)="majikeyric"
+thank3$(36)="maurice"
+thank3$(37)="maxice"
+thank3$(38)="mc64"
+thank3$(39)="mightyaxle"
+thank3$(40)="mr.toast"
+thank3$(41)="mteufel"
+thank3$(42)="n1k0m0"
+thank3$(43)="neoman"
+thank3$(44)="oziphantom"
+thank3$(45)="retrocombs"
+thank3$(46)="shallan50k"
+thank3$(47)="snoopy"
+thank3$(48)="stepz"
+thank3$(49)="stigodump"
+thank3$(50)="sy2002"
+thank3$(51)="tayger"
+thank3$(52)="thechief"
+thank3$(53)="ubik"
+thank3$(54)="urbanl"
+thank3$(55)="waulok"
+thank3$(56)="wombat"
+thank3$(57)="zeha"
+thank3$(58)="zzsila"
+thank3$(59)=""
+thank3$(60)=""
 
 #declare muse_state = 0
 #declare next_spr = 1
@@ -162,7 +165,7 @@ muse_clr(3)=22
 muse_clr(4)=25
 muse_clr(5)=26
 muse_clr(6)=28
-muse_clr(7)=30
+muse_clr(7)=29
 muse_clr(8)=31
 
 #declare thank_start_idx
@@ -366,8 +369,8 @@ muse_clr(8)=31
       counter = counter + 1
       startcol = 16:endcol = 31
       gosub cycle_colours
-      if counter > 16*4 then vel=vel*.93
-      if counter = 16*6-1 then state = 3:palette restore:counter=0:defcolval=0:defcoldir=2
+      if counter > 16*2 then vel=vel*.93
+      if counter = 16*3-1 then state = 3:palette restore:counter=0:defcolval=0:defcoldir=2
     bend
   bend
 
@@ -443,13 +446,14 @@ muse_clr(8)=31
 
 .show_thanks
 '-----------
-  if thank_state = 0 and counter > 20 then thank_state = 1:counter=0
+  if thank_state = 0 and counter > 5 then thank_state = 1:counter=0
   if thank_state = 1 then begin
     s$=thank1$(0):sx=1:sy=0:gosub draw_clr_text
+    if counter <> -1 then counter=counter+1:gosub draw_clr_text
     if counter = -1 then thank_state = 2:thank_idx=1
   bend
   ' pause
-  if thank_state = 2 and counter > 10 then begin
+  if thank_state = 2 and counter > 5 then begin
     thank_state = 3:counter = 0
   bend
   ' draw next name
@@ -459,6 +463,7 @@ muse_clr(8)=31
       if mod(thank_idx,2) = 1 then sx=10-len(s$)/2:else sx=70-len(s$)/2
       sy = int((thank_idx-1) / 2)*3 + 3
       gosub draw_clr_text
+      if counter <> -1 then counter=counter+1:gosub draw_clr_text
     bend
     if counter = -1 or thank_idx=16 then begin
       thank_idx = thank_idx + 1
@@ -475,6 +480,9 @@ muse_clr(8)=31
   ' 2nd page of thanks
   if curr_muse >= 1 and curr_muse <=4 then gosub thanks_2
 
+  ' 3rd page of thanks
+  if curr_muse >=5 and curr_muse <=6 then gosub thanks_3
+
   if thank_state<>4 and thank_state<>8 then begin
     startcol=16:endcol=31:gosub cycle_colours
   bend
@@ -483,13 +491,14 @@ muse_clr(8)=31
 
 .thanks_2
 '--------
-  if thank_state = 4 and counter > 20 then thank_state = 5:counter=0
+  if thank_state = 4 and counter > 10 then thank_state = 5:counter=0
   if thank_state = 5 then begin
     s$=thank2$(0):sx=40-len(s$)/2:sy=0:gosub draw_clr_text
+    if counter > -1 then counter=counter+1:gosub draw_clr_text
     if counter = -1 then thank_state = 6:thank_start_idx=1+(curr_muse-1)*4:thank_idx=thank_start_idx
   bend
   ' pause
-  if thank_state = 6 and counter > 10 then begin
+  if thank_state = 6 and counter > 5 then begin
     thank_state = 7:counter = 0
   bend
 
@@ -502,11 +511,13 @@ muse_clr(8)=31
       sy=(thank_idx - thank_start_idx) * 3 + 3
       if sy > 6 then sy = sy + 11
       gosub draw_clr_text
+      if counter > -1 then counter=counter+1:gosub draw_clr_text
     bend
     if counter = -1 or thank_idx-thank_start_idx=MAX_SHOUTS_PER_PAGE then begin
       thank_idx = thank_idx + 1
       if thank_idx - thank_start_idx >= MAX_SHOUTS_PER_PAGE+1 then begin
         thank_state = 4
+        if curr_muse = 4 then thank_state = 8
         muse_state=3
         counter=0
         palette restore
@@ -517,6 +528,43 @@ muse_clr(8)=31
 
   return
 
+.thanks_3
+'--------
+  if thank_state = 8 and counter > 10 then thank_state = 9:counter=0
+  if thank_state = 9 then begin
+    s$=thank3$(0):sx=40-len(s$)/2:sy=0:gosub draw_clr_text
+    if counter = -1 then thank_state = 10:thank_start_idx=1+(curr_muse-5)*30:thank_idx=thank_start_idx
+  bend
+  ' pause
+  if thank_state = 10 and counter > 5 then begin
+    thank_state = 11:counter = 0
+    if thank_idx-thank_start_idx >= 30 then begin
+      thank_state = 12
+      if curr_muse = 5 then thank_state = 8
+      muse_state = 3
+      counter = 0
+      palette restore
+      gosub store_curr_colours
+      return
+    bend
+  bend
+
+  ' draw next name
+  if thank_state = 11 then begin
+    if thank_idx-thank_start_idx < 30 then begin
+      s$=thank3$(thank_idx)
+      for k = 1 to len(s$)
+        if mod(thank_idx,2) = 1 then sx=10-len(s$)/2:else sx=70-len(s$)/2
+        sy = int((thank_idx-thank_start_idx) / 2) + 5
+        gosub draw_clr_text
+        counter = counter + 1
+      next k
+    bend
+    thank_idx = thank_idx + 1
+    thank_state = 10:counter = 0
+  bend
+
+  return
 
 .anim_muse_sprites
 '-----------------
