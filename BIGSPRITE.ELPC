@@ -38,7 +38,7 @@
   #declare sprite_x(8)
   #declare sprite_y(8)
 
-  #declare state = 4
+  #declare state = 0
   #declare counter = 0
   #declare defcolval = 0, defcoldir=1, altcolval = 0, altcoldir=1
   #declare startcol, endcol
@@ -165,15 +165,15 @@ thank4$(4)="...and thank you mum too, for always being there for me!"
 greys(0)=15:greys(1)=12:greys(2)=11
 
 #declare muse_clr(9)
-muse_clr(0)=16
+muse_clr(0)=20
 muse_clr(1)=18
-muse_clr(2)=20
-muse_clr(3)=22
-muse_clr(4)=25
-muse_clr(5)=26
-muse_clr(6)=28
-muse_clr(7)=29
-muse_clr(8)=31
+muse_clr(2)=29
+muse_clr(3)=26
+muse_clr(4)=22
+muse_clr(5)=28
+muse_clr(6)=16
+muse_clr(7)=31
+muse_clr(8)=25
 
 #declare thank_start_idx
 
@@ -415,6 +415,7 @@ muse_clr(8)=31
     gosub restore_screen
     curr_muse = curr_muse + 1
     muse_state = 5
+    gosub store_curr_colours
     counter = 0
   bend
 
@@ -684,6 +685,7 @@ muse_clr(8)=31
       palette restore
       fadeval=0
       gosub save_screen
+      gosub store_curr_colours
     bend
     return
 
@@ -886,6 +888,7 @@ muse_clr(8)=31
   poke SCRNPTRBNK, 0
 
   palette restore
+  print "{x93}";
   end
 
 
