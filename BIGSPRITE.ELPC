@@ -38,7 +38,7 @@
   #declare sprite_x(8)
   #declare sprite_y(8)
 
-  #declare state = 0
+  #declare state = 4
   #declare counter = 0
   #declare defcolval = 0, defcoldir=1, altcolval = 0, altcoldir=1
   #declare startcol, endcol
@@ -148,6 +148,13 @@ thank3$(58)="zzsila"
 thank3$(59)=""
 thank3$(60)=""
 
+#declare thank4$(10)
+thank4$(0)="...and some final thank yous to:"
+thank4$(1)="olivia newtown john, elo and john farrar, for the wonderful musical memories!"
+thank4$(2)="syntax party organisers for hosting this lovely event!"
+thank4$(3)="my wife, tram, and bubby moana for their love and sacrifice!"
+thank4$(4)="...and thank you mum too, for always being there for me!"
+
 #declare muse_state = 0
 #declare next_spr = 1
 #declare next_frm = 0
@@ -189,19 +196,7 @@ muse_clr(8)=31
   gosub init_default_colours
   gosub init_music
   gosub p1_drop_papers
-  'gosub p2_colour_cycle_static_muses
-  'gosub p3_animate_muse1_2_3_4
-  'gosub p4_pulse_background_mural_to_chorus
-  'gosub p5_animate_muse_5_6_7_8_9
-  'gosub p6_pulse_background_mural_2nd_time
   gosub p7_big_olivia_with_sprites
-  'gosub p8_muses_return_to_petscii_mural
-  'gosub p9_pulse_background_mural_3rd_time
-  'gosub p10_petscii_dancers_come_to_life
-  'gosub p11_expanded_or_tiled_sprites
-  'gosub p12_muses_dancing_in_circle
-  'gosub p13_hollywood_dash
-  'gosub p14_finale
 
 .init_default_colours
 '--------------------
@@ -380,11 +375,14 @@ muse_clr(8)=31
 
   if state = 5 then gosub fade_out
 
+  ' bail out to olivia?
+  if state = 5 and curr_muse = 8 and muse_state=0 then return
+
   if state = 6 then gosub focus_muse
 
-  get a$:if a$="" then goto p1_loop
+  ' get a$:if a$="" then goto p1_loop
 
-  return
+  goto p1_loop
 
 .focus_muse
 '----------
@@ -412,7 +410,7 @@ muse_clr(8)=31
 
   if muse_state = 4 then begin
     'print "{x13}";chr$(27);"q muse_state=4";fadeval;:getkey s$
-    for k = 0 to 7:sprite k,0:next k
+    for k = 0 to 7:sprite k,0:spr_active(k)=0:next k
     bank 128
     gosub restore_screen
     curr_muse = curr_muse + 1
@@ -446,6 +444,7 @@ muse_clr(8)=31
 
 .show_thanks
 '-----------
+  poke 53275, 255
   if thank_state = 0 and counter > 5 then thank_state = 1:counter=0
   if thank_state = 1 then begin
     s$=thank1$(0):sx=1:sy=0:gosub draw_clr_text
@@ -482,6 +481,9 @@ muse_clr(8)=31
 
   ' 3rd page of thanks
   if curr_muse >=5 and curr_muse <=6 then gosub thanks_3
+
+  ' 4th page of thanks
+  if curr_muse = 7 then gosub thanks_4
 
   if thank_state<>4 and thank_state<>8 then begin
     startcol=16:endcol=31:gosub cycle_colours
@@ -562,6 +564,43 @@ muse_clr(8)=31
     bend
     thank_idx = thank_idx + 1
     thank_state = 10:counter = 0
+  bend
+
+  return
+
+.thanks_4
+'--------
+  if thank_state = 12 and counter > 10 then thank_state = 13:counter=0
+  if thank_state = 13 then begin
+    s$=thank4$(0):sx=40-len(s$)/2:sy=0:gosub draw_clr_text
+    ' if counter > -1 then counter=counter+1:gosub draw_clr_text
+    if counter = -1 then thank_state = 14:thank_idx=1
+  bend
+  ' pause
+  if thank_state = 14 and counter > 5 then begin
+    thank_state = 15:counter = 0
+  bend
+
+  ' draw next shout out
+  if thank_state = 15 then begin
+    if thank_idx-1 < MAX_SHOUTS_PER_PAGE then begin
+      s$=thank4$(thank_idx)
+      sx=40-len(s$)/2
+      sy=(thank_idx - 1) * 3 + 3
+      if sy > 6 then sy = sy + 11
+      gosub draw_clr_text
+      ' if counter > -1 then counter=counter+1:gosub draw_clr_text
+    bend
+    if counter = -1 or thank_idx-1=MAX_SHOUTS_PER_PAGE then begin
+      thank_idx = thank_idx + 1
+      if thank_idx - 1 >= MAX_SHOUTS_PER_PAGE+1 then begin
+        thank_state = 16
+        muse_state=3
+        counter=0
+        palette restore
+        gosub store_curr_colours
+      bend:else thank_state = 14
+    bend
   bend
 
   return
@@ -694,6 +733,8 @@ muse_clr(8)=31
 '----
 .p7_init
 '----
+  poke 53275,0
+
   ' switch to 80x50
   bank 128
   setbit HOTREG_7, 7
@@ -748,6 +789,14 @@ muse_clr(8)=31
   poke SPRPTRBNK, 4+128           
   wpoke SPRPTRADR, 0
 
+  ' black out palette
+  edma 3, $300, 0, $ffd3100
+
+  ' clear 80x50 chars and colour ram
+  edma 3, 4000, 160, $48000
+  edma 3, 4000, 6, $ff80000
+  ' for idx=0 to 3999:poke $48000+idx,160:poke $ff80000+idx,6:next idx
+
   ' switch palette
   #declare red,green,blue
   loc=$46040
@@ -761,9 +810,10 @@ muse_clr(8)=31
     poke $d300+idx,blue
   next idx
 
-  ' clear 80x50 chars and colour ram
-  for idx=0 to 3999:poke $48000+idx,160:poke $ff80000+idx,6:next idx
-      
+  for k = 0 to 7
+    movspr k, 0#0
+  next k
+        
   ' display sprite
   #declare sprclr,offx
   sprclr = 30
@@ -1036,6 +1086,7 @@ muse_clr(8)=31
 .poll_play
 '---------
   if rplay(1) then return
+  if bar_index>22 then return
 
   music_chunk_index=map_bar_to_chunk(bar_index)
   
@@ -1044,6 +1095,5 @@ muse_clr(8)=31
   play ,,,v4$(music_chunk_index),v5$(music_chunk_index),v6$(music_chunk_index)
 
   bar_index=bar_index+1
-  if bar_index>23 then end
   return
 ÿ
