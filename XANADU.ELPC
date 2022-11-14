@@ -102,9 +102,9 @@
 .main
 '====
   gosub init
-  'gosub bas_logo
-  'gosub xanadu_title
-  'gosub petscii_story
+  gosub bas_logo
+  gosub xanadu_title
+  gosub petscii_story
   gosub ender
 
   ' backup palette to $48000
@@ -112,6 +112,8 @@
   ' set all colours to black
   edma 3, $300, 0, $ffd3100 
 
+  'TODO: delete
+  if peek($d020)<>0 then border 2:gosub init_petscii_frames
   frameidx=FRM_MURAL
   gosub draw_petscii_frame
 

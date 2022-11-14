@@ -90,6 +90,18 @@ bigsprite.d81: muse.dat paper.dat bigsprite.prg
 	c1541 -attach bigsprite.d81 -write paper.dat
 	c1541 -attach bigsprite.d81 -write bigsprite.el bigsprite.el,s
 
+XANADU.D81: muse.dat paper.dat intro.dat oli.dat
+	rm -f xanadu.d81
+	c1541 -attach "C:\Users\gurcei\AppData\Roaming\xemu-lgb\mega65\hdos\11.D81" -read bigsprite bigsprite.prg -read xanadu-basic65 xanadu-basic65.prg
+	c1541 -format xanadu,gi d81 xanadu.d81
+	c1541 -attach xanadu.d81 -write autoboot.c65.prg autoboot.c65
+	c1541 -attach xanadu.d81 -write xanadu-basic65.prg xanadu-basic65
+	c1541 -attach xanadu.d81 -write bigsprite.prg bigsprite
+	c1541 -attach xanadu.d81 -write intro.dat
+	c1541 -attach xanadu.d81 -write paper.dat
+	c1541 -attach xanadu.d81 -write muse.dat
+	c1541 -attach xanadu.d81 -write oli.dat
+
 clean:
 	rm -f bigsprite.prg bigsprite.d81
 	rm -f *.o
