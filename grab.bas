@@ -5,7 +5,7 @@
    30 rem 2. then use cursor keys to move to bottom-right point & press 'space'
    40 rem 3. provide a filename to save to
    50 x=0:y=0:s=0:sv=0
-   51 if peek($5fffe)<>71 or peek($5ffff)<>73 then sprdef $5fffe,$4947:poke $40000,0:rem check for magic marker at end of bank 5, if not there, initialise b4 mem
+   51 if peek($5fffe)<>71 or peek($5ffff)<>73 then wpoke $5fffe,$4947:poke $40000,0:rem check for magic marker at end of bank 5, if not there, initialise b4 mem
    55  cursor 0,24:gosub 1100:print cl$;"block count=";peek($40000);", next-free=$";hex$(z);
    60 if s=0 then t1=peek($800+x+y*80):c1=peek($1f800+x+y*80):x0=x:y0=y
    65 if s=1 then t2=peek($800+x+y*80):c2=peek($1f800+x+y*80):x1=x:y1=y
